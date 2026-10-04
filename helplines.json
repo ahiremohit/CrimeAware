@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Emergency",
+    "number": "112",
+    "color": "#ef4444",
+    "icon": "\ud83c\udd98"
+  },
+  {
+    "name": "Women Helpline",
+    "number": "1091",
+    "color": "#ec4899",
+    "icon": "\ud83d\udee1\ufe0f"
+  },
+  {
+    "name": "Senior Citizen",
+    "number": "14567",
+    "color": "#8b5cf6",
+    "icon": "\ud83d\udc74"
+  },
+  {
+    "name": "Cyber Crime",
+    "number": "1930",
+    "color": "#3b82f6",
+    "icon": "\ud83d\udcbb"
+  },
+  {
+    "name": "Child Helpline",
+    "number": "1098",
+    "color": "#f59e0b",
+    "icon": "\ud83e\uddd2"
+  },
+  {
+    "name": "Anti-Corruption",
+    "number": "1064",
+    "color": "#10b981",
+    "icon": "\u2696\ufe0f"
+  },
+  {
+    "name": "Road Accident",
+    "number": "1073",
+    "color": "#f97316",
+    "icon": "\ud83d\ude97"
+  },
+  {
+    "name": "Railway",
+    "number": "139",
+    "color": "#6366f1",
+    "icon": "\ud83d\ude82"
+  },
+  {
+    "name": "Disaster Mgmt",
+    "number": "1078",
+    "color": "#dc2626",
+    "icon": "\u26d1\ufe0f"
+  },
+  {
+    "name": "Missing Child",
+    "number": "1800-180-5051",
+    "color": "#d97706",
+    "icon": "\ud83d\udd0d"
+  },
+  {
+    "name": "Anti-Dowry/DV",
+    "number": "181",
+    "color": "#db2777",
+    "icon": "\ud83c\udfe0"
+  },
+  {
+    "name": "Mental Health",
+    "number": "9152987821",
+    "color": "#7c3aed",
+    "icon": "\ud83e\udde0"
+  },
+  {
+    "name": "Consumer",
+    "number": "1800-11-4000",
+    "color": "#059669",
+    "icon": "\ud83d\uded2"
+  },
+  {
+    "name": "HIV/AIDS",
+    "number": "1097",
+    "color": "#b45309",
+    "icon": "\ud83c\udfe5"
+  },
+  {
+    "name": "TB Helpline",
+    "number": "1800-11-6666",
+    "color": "#047857",
+    "icon": "\ud83d\udc8a"
+  }
+]

@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}{{ state['state/ut'] }} — Crime Profile{% endblock %}
+{% block content %}
+<div class="page">
+  {% set rk = state['crime_risk_level'].split()[0] | lower %}
+
+  <div class="state-hero" style="background:var(--bg2)">
+    <div class="container">
+      <a href="/dashboard" class="state-back fade-up">← Back to Dashboard</a>
+      <div class="fade-up fade-up-1" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:clamp(1.8rem,4vw,3.2rem)">{{ state['state/ut'] }}</h1>
+          <div class="state-meta">
+            <span class="risk-badge risk-{{ rk }}"><span class="risk-dot"></span>{{ state['crime_risk_level'] }}</span>
+            <span>📊 Crime Rate: <strong style="color:var(--text)">{{ state['rate_of_cognizable_crimes_(ipc)_(2022)'] }}/lakh</strong></span>
+            <span>⚖️ Charge Rate: <strong style="color:var(--text)">{{ state['chargesheeting_rate_(2022)'] }}%</strong></span>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap">
+          <a href="/compare?a={{ state['state/ut']| replace(' ', '%20') }}" class="btn btn-outline" style="font-size:.85rem;padding:8px 14px">⚖️ Compare</a>
+          <a href="/safety-score" class="btn btn-outline" style="font-size:.85rem;padding:8px 14px">🛡️ Safety Score</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:40px;padding-bottom:80px">
+
+    <!-- Key metric cards -->
+    <div class="stat-grid reveal">
+      <div class="stat-card {% if rk=='high' %}danger{% elif rk=='medium' %}warning{% else %}success{% endif %}">
+        <div class="stat-label">2022 Total Crimes</div>
+        <div class="stat-value" data-count="{{ state['2022'] | int }}">{{ state['2022']|int }}</div>
+        <div class="stat-sub">IPC cognizable crimes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Crime Rate / Lakh</div>
+        <div class="stat-value" style="color:{{ risk_color }}">{{ state['rate_of_cognizable_crimes_(ipc)_(2022)'] }}</div>
+        <div class="stat-sub">vs national avg: 258.1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Charge-Sheeting Rate</div>
+        <div class="stat-value" style="color:{% if state['chargesheeting_rate_(2022)'] >= 70 %}#22c55e{% elif state['chargesheeting_rate_(2022)'] >= 50 %}#f59e0b{% else %}#ef4444{% endif %}">
+          {{ state['chargesheeting_rate_(2022)'] }}%
+        </div>
+        <div class="stat-sub">Legal follow-through rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">2023 ML Forecast</div>
+        <div class="stat-value" style="color:#f59e0b">{{ state['2023_forecast']|int }}</div>
+        <div class="stat-sub">Range: {{ state['2023_range'] }}</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid reveal" style="margin-top:32px">
+      <div class="chart-container">
+        <div class="chart-title">📈 Crime Trend 2020–2023</div>
+        <div style="position:relative;height:280px;width:100%"><canvas id="trendChart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">📊 Charge Rate vs National Average</div>
+        <div style="position:relative;height:280px;width:100%"><canvas id="compareChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Legal Info -->
+    <div style="margin-top:40px" class="reveal">
+      <h3 style="margin-bottom:20px;color:var(--white)">⚖️ Legal Framework</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        <div class="card">
+          <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">IPC Sections</div>
+          <div style="font-size:1.1rem;font-weight:600;color:var(--accent2)">{{ state['ipc_sections'] }}</div>
+        </div>
+        <div class="card">
+          <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Typical Punishment</div>
+          <div style="font-size:1rem;color:var(--text)">{{ state['punishment'] }}</div>
+        </div>
+        <div class="card" style="border-left:3px solid {{ risk_color }}">
+          <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Risk Explanation</div>
+          <div style="font-size:.95rem;color:var(--text);line-height:1.6">{{ state['risk_explanation'] }}</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent2)">
+          <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Social Message</div>
+          <div style="font-size:.95rem;color:var(--text)">{{ state['social_message'] }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety Tips (AI-generated) -->
+    {% if safety_tips %}
+    <div style="margin-top:40px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(99,102,241,.08));border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:28px" class="reveal">
+      <h3 style="color:var(--white);margin-bottom:16px">🛡️ Safety Tips for {{ state['state/ut'] }}</h3>
+      <div style="color:var(--text);line-height:1.9;white-space:pre-wrap;font-size:.95rem">{{ safety_tips }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Neighbor State Comparison -->
+    {% if neighbor_data %}
+    <div style="margin-top:40px" class="reveal">
+      <h3 style="color:var(--white);margin-bottom:16px">📍 Neighboring States</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+        {% for nb in neighbor_data %}
+        {% set nbRisk = nb.risk.split()[0]|lower %}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px">
+          <div style="font-weight:700;color:var(--white);margin-bottom:6px">{{ nb.name }}</div>
+          <div style="font-size:1.3rem;font-weight:800;color:{% if nbRisk=='high' %}#ef4444{% elif nbRisk=='medium' %}#f59e0b{% else %}#22c55e{% endif %}">{{ nb.rate }}</div>
+          <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px">crimes/lakh</div>
+          <a href="/compare?a={{ state['state/ut']| replace(' ', '%20') }}&b={{ nb.name| replace(' ', '%20') }}" class="btn btn-outline" style="font-size:.78rem;padding:5px 12px">⚖️ Compare</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- FIR Guide -->
+    <div style="margin-top:40px" class="reveal">
+      <h3 style="color:var(--white);margin-bottom:16px">📋 How to File an FIR in {{ state['state/ut'] }}</h3>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <details style="padding:20px">
+          <summary style="cursor:pointer;color:var(--white);font-weight:600;list-style:none;display:flex;justify-content:space-between">
+            Step-by-step FIR Filing Guide <span>▼</span>
+          </summary>
+          <div style="margin-top:16px;color:var(--text);line-height:1.8;font-size:.95rem">
+            <ol style="padding-left:20px">
+              <li><strong>Go to the nearest police station</strong> — You can file at ANY station (Zero FIR allowed under BNSS 2023)</li>
+              <li><strong>Ask for the Duty Officer or SHO</strong> — They must record your complaint</li>
+              <li><strong>Narrate the incident clearly</strong> — Include date, time, place, accused description</li>
+              <li><strong>Get FIR copy</strong> — Police MUST give you a free signed copy (Section 154 CrPC)</li>
+              <li><strong>Note the FIR number</strong> — You will need this for follow-ups</li>
+              <li><strong>If refused:</strong> Send complaint by registered post to SP or approach Magistrate under Section 156(3)</li>
+            </ol>
+            <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:8px">
+              <strong style="color:var(--accent)">Online FIR:</strong>
+              <span style="color:var(--muted)"> Check your state police website for e-FIR facility. Many states now allow online FIR for select offences.</span>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Live News -->
+    {% if news_items %}
+    <div style="margin-top:40px" class="reveal">
+      <h3 style="margin-bottom:20px;color:var(--white)">📰 Latest News</h3>
+      <div style="display:grid;gap:12px">
+        {% for article in news_items %}
+        <a href="{{ article.url }}" target="_blank" rel="noopener" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;text-decoration:none;display:block;transition:.2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-weight:600;color:var(--white);margin-bottom:4px;line-height:1.4">{{ article.title }}</div>
+          <div style="color:var(--muted);font-size:.82rem">{{ article.source.name }} · {{ article.publishedAt | truncate(10, true, '') if article.publishedAt }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/chart.min.js"></script>
+<script>
+var trend = {{ trend|safe }};
+var forecast = {{ state['2023_forecast']|int }};
+var chargeRate = {{ state['chargesheeting_rate_(2022)'] }};
+
+function drawCharts() {
+  // Trend line chart
+  var tCanvas = document.getElementById('trendChart');
+  if (tCanvas) {
+    new Chart(tCanvas, {
+      type: 'line',
+      data: {
+        labels: ['2020', '2021', '2022', '2023 Forecast'],
+        datasets: [{
+          label: 'Total IPC Crimes',
+          data: [trend['2020'], trend['2021'], trend['2022'], forecast],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.12)',
+          fill: true,
+          pointBackgroundColor: '#3b82f6',
+          pointRadius: 6,
+          segment: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: {}, x: {} }
+      }
+    });
+  }
+
+  // Bar chart — charge rate
+  var cCanvas = document.getElementById('compareChart');
+  if (cCanvas) {
+    new Chart(cCanvas, {
+      type: 'bar',
+      data: {
+        labels: ['{{ state["state/ut"] }}', 'National Avg'],
+        datasets: [{
+          label: 'Chargesheeting Rate %',
+          data: [chargeRate, 71.3],
+          backgroundColor: ['rgba(59,130,246,0.75)', 'rgba(148,163,184,0.35)'],
+          borderColor: ['#3b82f6', '#64748b'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { min: 0, max: 100, ticks: { callback: function(v){ return v+'%'; } } } }
+      }
+    });
+  }
+}
+
+// Run after DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', drawCharts);
+} else {
+  drawCharts();
+}
+</script>
+{% endblock %}

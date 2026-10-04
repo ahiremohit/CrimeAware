@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Safety Score Calculator — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:900px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:40px" class="fade-up">
+      <div class="eyebrow">Personalised Safety</div>
+      <h1 style="color:var(--white)">🛡️ Your Safety Score</h1>
+      <p style="color:var(--muted)">Get a personalised 0-100 safety score based on your state, travel habits, and profile.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start" class="reveal">
+      <!-- Form -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px">
+        <h3 style="color:var(--white);margin-bottom:20px">Enter Your Details</h3>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:6px">State / UT</label>
+            <select id="ssState" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:6px">
+              {% for s in states_list %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:8px">Area Type</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <label class="radio-btn"><input type="radio" name="area" value="Urban" checked> Urban</label>
+              <label class="radio-btn"><input type="radio" name="area" value="Semi-Urban"> Semi-Urban</label>
+              <label class="radio-btn"><input type="radio" name="area" value="Rural"> Rural</label>
+            </div>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:8px">Gender</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <label class="radio-btn"><input type="radio" name="gender" value="Male" checked> Male</label>
+              <label class="radio-btn"><input type="radio" name="gender" value="Female"> Female</label>
+              <label class="radio-btn"><input type="radio" name="gender" value="Other"> Other</label>
+            </div>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:8px">Usual Travel Time</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <label class="radio-btn"><input type="radio" name="travel" value="Daytime" checked> Daytime</label>
+              <label class="radio-btn"><input type="radio" name="travel" value="Evening"> Evening</label>
+              <label class="radio-btn"><input type="radio" name="travel" value="Night"> Night</label>
+              <label class="radio-btn"><input type="radio" name="travel" value="Late Night"> Late Night</label>
+            </div>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:8px">Age Group</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <label class="radio-btn"><input type="radio" name="age" value="Under 18"> Under 18</label>
+              <label class="radio-btn"><input type="radio" name="age" value="18-35" checked> 18–35</label>
+              <label class="radio-btn"><input type="radio" name="age" value="35-60"> 35–60</label>
+              <label class="radio-btn"><input type="radio" name="age" value="60+"> 60+</label>
+            </div>
+          </div>
+          <button onclick="calculateScore()" class="btn btn-primary" style="padding:12px;margin-top:4px">Calculate My Safety Score →</button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="resultPanel" style="display:none">
+        <div id="scoreCircleWrap" style="text-align:center;margin-bottom:24px">
+          <div id="scoreCircle" style="width:160px;height:160px;border-radius:50%;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;border:8px solid #22c55e;background:rgba(34,197,94,.1)">
+            <div id="scoreNum" style="font-size:3rem;font-weight:800;color:#22c55e">—</div>
+            <div style="color:var(--muted);font-size:.8rem">/ 100</div>
+          </div>
+          <div id="scoreLabel" style="margin-top:12px;font-weight:700;font-size:1.2rem;color:var(--white)">—</div>
+          <div id="scoreState" style="color:var(--muted);font-size:.9rem;margin-top:4px"></div>
+        </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px">
+          <h4 style="color:var(--white);margin-bottom:12px">🔐 Safety Tips for You</h4>
+          <ul id="tipsList" style="color:var(--text);font-size:.9rem;padding-left:16px;line-height:2;margin:0"></ul>
+        </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px">
+          <h4 style="color:var(--white);margin-bottom:12px">📍 Safer Alternatives</h4>
+          <div id="altsList"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="tel:112" class="btn btn-primary" style="flex:1;text-align:center">🆘 SOS — Call 112</a>
+          <button onclick="shareScore()" class="btn btn-outline" style="flex:1">📤 Share Score</button>
+        </div>
+      </div>
+
+      <div id="emptyResult" style="background:var(--bg2);border:1px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);min-height:200px;text-align:center;padding:40px">
+        <div><div style="font-size:3rem;margin-bottom:12px">🛡️</div><p>Your personalised safety score will appear here</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.radio-btn{background:var(--bg);border:1px solid var(--border);padding:8px 10px;border-radius:6px;cursor:pointer;font-size:.85rem;color:var(--text);display:flex;align-items:center;gap:6px;transition:.2s}
+.radio-btn:hover{border-color:var(--accent)}
+.radio-btn input{accent-color:var(--accent)}
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+async function calculateScore(){
+  const state = document.getElementById('ssState').value;
+  const area = document.querySelector('input[name="area"]:checked').value;
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  const travel = document.querySelector('input[name="travel"]:checked').value;
+  const age = document.querySelector('input[name="age"]:checked').value;
+
+  try {
+    const res = await fetch('/api/safety-score',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({state, area_type:area, gender, travel_time:travel, age_group:age})
+    });
+    const d = await res.json();
+    if(d.error){alert(d.error);return;}
+
+    const score = d.score;
+    const color = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ef4444';
+    const label = score >= 70 ? '✅ Relatively Safe' : score >= 40 ? '⚠️ Moderate Risk' : '🚨 High Risk — Take Precautions';
+
+    document.getElementById('scoreNum').textContent = score;
+    document.getElementById('scoreNum').style.color = color;
+    document.getElementById('scoreCircle').style.borderColor = color;
+    document.getElementById('scoreCircle').style.background = color+'22';
+    document.getElementById('scoreLabel').textContent = label;
+    document.getElementById('scoreState').textContent = state + ' · Crime Rate: '+d.crime_rate+'/lakh';
+
+    const tips = document.getElementById('tipsList');
+    tips.innerHTML = '';
+    (d.tips||[]).forEach(t => { const li=document.createElement('li'); li.textContent=t; tips.appendChild(li); });
+
+    const alts = document.getElementById('altsList');
+    alts.innerHTML = '';
+    (d.safer_alternatives||[]).forEach(a => {
+      const riskColor = a.crime_risk_level==='LOW RISK'?'#22c55e':a.crime_risk_level==='HIGH RISK'?'#ef4444':'#f59e0b';
+      alts.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <a href="/state/${encodeURIComponent(a['state/ut'])}" style="color:var(--text);text-decoration:none">${a['state/ut']}</a>
+        <span style="color:${riskColor};font-size:.85rem">${a['rate_of_cognizable_crimes_(ipc)_(2022)']} /lakh</span>
+      </div>`;
+    });
+
+    document.getElementById('emptyResult').style.display='none';
+    document.getElementById('resultPanel').style.display='block';
+  } catch(e){ alert('Error calculating score. Please try again.'); }
+}
+
+function shareScore(){
+  const score = document.getElementById('scoreNum').textContent;
+  const state = document.getElementById('ssState').value;
+  const text = `My CrimeAware Safety Score for ${state} is ${score}/100. Check yours at CrimeAware India! 🛡️`;
+  if(navigator.share){ navigator.share({title:'My Safety Score',text}); }
+  else { navigator.clipboard.writeText(text).then(()=>alert('Copied to clipboard!')); }
+}
+</script>
+{% endblock %}

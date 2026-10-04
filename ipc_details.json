@@ -1,0 +1,182 @@
+[
+  {
+    "crime": "Murder",
+    "section": "IPC 302",
+    "punishment": "Death or Life Imprisonment + Fine",
+    "icon": "\u2696\ufe0f",
+    "tip": "Always dial 112 immediately. Never disturb the crime scene.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Rape",
+    "section": "IPC 376",
+    "punishment": "10 years to Life Imprisonment",
+    "icon": "\ud83d\udee1\ufe0f",
+    "tip": "Report to nearest police or call 1091 (Women Helpline).",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Kidnapping",
+    "section": "IPC 363",
+    "punishment": "Up to 7 years + Fine",
+    "icon": "\ud83d\udd0d",
+    "tip": "File FIR immediately. Share all last known details with police.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Robbery",
+    "section": "IPC 392",
+    "punishment": "Up to 10 years Rigorous Imprisonment",
+    "icon": "\ud83c\udfdb\ufe0f",
+    "tip": "Do not resist armed robbers. Note vehicle/person descriptions.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Theft",
+    "section": "IPC 378",
+    "punishment": "Up to 3 years or Fine or Both",
+    "icon": "\ud83d\udccb",
+    "tip": "File FIR and keep all receipts/documents for insurance claims.",
+    "cognizable": true,
+    "bailable": true
+  },
+  {
+    "crime": "Cybercrime",
+    "section": "IT Act 66",
+    "punishment": "3 years / Rs.5 lakh fine",
+    "icon": "\ud83d\udcbb",
+    "tip": "Report at cybercrime.gov.in or call 1930 Cyber Helpline.",
+    "cognizable": true,
+    "bailable": true
+  },
+  {
+    "crime": "Fraud/Cheating",
+    "section": "IPC 420",
+    "punishment": "Up to 7 years + Fine",
+    "icon": "\ud83d\udcb0",
+    "tip": "Never share OTP, CVV or passwords with anyone.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Harassment",
+    "section": "IPC 354",
+    "punishment": "1-3 years + Fine",
+    "icon": "\u26a0\ufe0f",
+    "tip": "Raise voice publicly and dial 1091. Screenshot online harassment.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Domestic Violence",
+    "section": "IPC 498A + DV Act 2005",
+    "punishment": "Up to 3 years + Fine",
+    "icon": "\ud83c\udfe0",
+    "tip": "Call 181 (Anti-Dowry/DV helpline). Seek shelter at nearest protection officer.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Dowry Death",
+    "section": "IPC 304B",
+    "punishment": "Minimum 7 years up to Life Imprisonment",
+    "icon": "\u26a0\ufe0f",
+    "tip": "Report immediately. Collect all evidence of demands and harassment.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Acid Attack",
+    "section": "IPC 326A / 326B",
+    "punishment": "Minimum 10 years up to Life Imprisonment + Fine",
+    "icon": "\ud83d\udd25",
+    "tip": "Flush skin with water immediately. Call 112 and go to nearest hospital.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Stalking",
+    "section": "IPC 354D",
+    "punishment": "1st offence: 3 years. Repeat: 5 years + Fine",
+    "icon": "\ud83d\udc41\ufe0f",
+    "tip": "Document all instances. Obtain restraining order from court.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Voyeurism",
+    "section": "IPC 354C",
+    "punishment": "1st offence: 1-3 years. Repeat: 3-7 years",
+    "icon": "\ud83d\udcf7",
+    "tip": "Report immediately. Preserve any digital evidence.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Child Abuse",
+    "section": "POCSO Act Sections 3-14",
+    "punishment": "Minimum 7 years to Life Imprisonment",
+    "icon": "\ud83e\uddd2",
+    "tip": "Call Childline 1098. Do not confront the accused alone.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Drunk Driving",
+    "section": "Motor Vehicles Act 185",
+    "punishment": "Up to 6 months / Rs.10,000 fine. Repeat: 2 years",
+    "icon": "\ud83d\ude97",
+    "tip": "Never drink and drive. Use designated driver or cab services.",
+    "cognizable": true,
+    "bailable": true
+  },
+  {
+    "crime": "Drug Possession",
+    "section": "NDPS Act Section 27",
+    "punishment": "Small qty: 6 months\u20131 year. Commercial: 10-20 years",
+    "icon": "\ud83d\udc8a",
+    "tip": "Avoid accepting unknown substances. Report drug activity to police.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Money Laundering",
+    "section": "PMLA Sections 3 & 4",
+    "punishment": "3 to 7 years rigorous imprisonment + Fine",
+    "icon": "\ud83d\udcb8",
+    "tip": "Report suspicious financial transactions to ED or police.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "Corruption/Bribery",
+    "section": "Prevention of Corruption Act 7 & 13",
+    "punishment": "3 to 7 years + Fine",
+    "icon": "\ud83c\udfdb\ufe0f",
+    "tip": "Report to CBI, ACB or call 1064 Anti-Corruption helpline.",
+    "cognizable": true,
+    "bailable": false
+  },
+  {
+    "crime": "RTI Denial/Obstruction",
+    "section": "RTI Act Section 20",
+    "punishment": "Penalty Rs.250/day up to Rs.25,000 + Disciplinary action",
+    "icon": "\ud83d\udcc4",
+    "tip": "File first appeal within 30 days. Second appeal to CIC/SIC.",
+    "cognizable": false,
+    "bailable": true
+  },
+  {
+    "crime": "Defamation",
+    "section": "IPC 499 / 500",
+    "punishment": "Up to 2 years Simple Imprisonment or Fine or Both",
+    "icon": "\ud83d\udce2",
+    "tip": "Document all false statements. Consult a lawyer for civil defamation suit.",
+    "cognizable": false,
+    "bailable": true
+  }
+]

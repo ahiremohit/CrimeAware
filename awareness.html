@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Legal Awareness — CrimeAware India{% endblock %}
+
+{% block content %}
+<div class="page">
+<div class="container" style="padding-top:40px;padding-bottom:80px">
+
+  <!-- Header -->
+  <div style="margin-bottom:48px" class="fade-up">
+    <div class="eyebrow" style="display:inline-block;margin-bottom:12px">Know Your Rights</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,3rem);margin-bottom:12px">Legal Awareness Guide</h1>
+    <p style="color:var(--muted);font-size:1.05rem;max-width:560px">
+      Understand key IPC sections in plain language. Know what actions are crimes, what punishments apply, and what to do if you encounter them.
+    </p>
+  </div>
+
+  <!-- EMERGENCY HELPLINES -->
+  <div class="reveal" style="margin-bottom:56px">
+    <h2 style="margin-bottom:8px">🆘 Emergency Helplines</h2>
+    <p style="color:var(--muted);margin-bottom:24px;font-size:.95rem">Click any card to copy the number to your clipboard. Save these contacts now.</p>
+    <div class="helpline-grid">
+      {% for h in helplines %}
+      <div class="helpline-card" style="border-top:3px solid {{ h.color }}">
+        <div class="h-icon">{{ h.icon }}</div>
+        <div class="h-name">{{ h.name }}</div>
+        <div class="h-number" style="color:{{ h.color }}">{{ h.number }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- IPC LAWS -->
+  <div class="reveal">
+    <h2 style="margin-bottom:8px">⚖️ Key IPC Sections Explained</h2>
+    <p style="color:var(--muted);margin-bottom:28px;font-size:.95rem">Plain-language summaries of the most important sections of the Indian Penal Code.</p>
+    <div class="law-grid">
+      {% for law in laws %}
+      <div class="law-card reveal">
+        <div class="lc-icon">{{ law.icon }}</div>
+        <div class="lc-crime" style="display:flex; justify-content:space-between; align-items:center;">
+          {{ law.crime }}
+          <button class="voice-readout" title="Listen to summary" data-text="{{ law.crime }}. {{ law.section }}. Punishment: {{ law.punishment }}. Safety Tip: {{ law.tip }}">🔊</button>
+        </div>
+        <div class="lc-section">{{ law.section }}</div>
+        <div class="lc-punishment">🔒 {{ law.punishment }}</div>
+        <div class="lc-tip">💡 {{ law.tip }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CITIZEN RIGHTS ACCORDION -->
+  <div style="margin-top:64px" class="reveal">
+    <h2 style="margin-bottom:24px">🏛️ Your Rights as a Citizen</h2>
+    <div id="accordion" style="display:grid;gap:12px">
+{% for item in rights %}
+      <div class="accordion-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden">
+        <button class="accordion-btn" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;color:var(--text);font-family:var(--font-head);font-size:1rem;font-weight:600;text-align:left" onclick="toggleAccordion(this)">
+          {{ item[0] }}
+          <span class="acc-icon" style="color:var(--accent);font-size:1.2rem;transition:transform .3s;flex-shrink:0;margin-left:12px">+</span>
+        </button>
+        <div class="accordion-body" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 20px 18px;color:var(--muted);font-size:.92rem;line-height:1.7">{{ item[1] }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- SAFETY TIPS -->
+  <div style="margin-top:64px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-xl);padding:40px" class="reveal">
+    <h2 style="margin-bottom:24px">🛡️ Personal Safety Tips</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
+{% for item in tips %}
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px">
+        <div style="font-size:1.6rem;margin-bottom:8px">{{ item[0] }}</div>
+        <h4 style="color:var(--white);margin-bottom:8px">{{ item[1] }}</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.6">{{ item[2] }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CTA to quiz -->
+  <div style="margin-top:48px;text-align:center" class="reveal">
+    <p style="color:var(--muted);margin-bottom:20px">Think you know your rights well enough?</p>
+    <a href="/quiz" class="btn btn-primary">🧠 Take the Legal Awareness Quiz →</a>
+  </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleAccordion(btn) {
+  const body = btn.nextElementSibling;
+  const icon = btn.querySelector('.acc-icon');
+  const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+  // Close all
+  document.querySelectorAll('.accordion-body').forEach(b => b.style.maxHeight='0px');
+  document.querySelectorAll('.acc-icon').forEach(i => { i.textContent='+'; i.style.transform=''; });
+  if (!isOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    icon.textContent = '−';
+    icon.style.transform = 'rotate(0deg)';
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Find Police Station — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:900px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:36px" class="fade-up">
+      <div class="eyebrow">Emergency Locator</div>
+      <h1 style="color:var(--white)">🚔 Find Nearest Police Station</h1>
+      <p style="color:var(--muted)">Locate police stations near you by city or state. In an emergency, always call <a href="tel:112" style="color:#ef4444;font-weight:700">112</a> first.</p>
+    </div>
+
+    <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:16px;text-align:center;margin-bottom:32px">
+      <strong style="color:#ef4444;font-size:1.1rem">🆘 Emergency? Don't search — call 112 immediately!</strong>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap">
+      <input type="text" id="citySearch" placeholder="Enter city name (e.g. Mumbai, Delhi, Bengaluru)" style="flex:1;min-width:200px;padding:12px;background:var(--bg2);border:1px solid var(--border);color:var(--white);border-radius:8px;font-size:1rem">
+      <button onclick="searchStations()" class="btn btn-primary" style="padding:12px 24px">Search</button>
+    </div>
+
+    <div id="stationResults" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+
+    <div id="stationNote" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:24px">
+      <h4 style="color:var(--white);margin-bottom:10px">📍 Major City Police Helplines</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Mumbai Police</div><a href="tel:022-22620111" style="color:var(--accent);font-size:.9rem">022-22620111</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Delhi Police</div><a href="tel:011-23490000" style="color:var(--accent);font-size:.9rem">011-23490000</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Bengaluru Police</div><a href="tel:080-22942222" style="color:var(--accent);font-size:.9rem">080-22942222</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Chennai Police</div><a href="tel:044-23452360" style="color:var(--accent);font-size:.9rem">044-23452360</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Kolkata Police</div><a href="tel:033-22143004" style="color:var(--accent);font-size:.9rem">033-22143004</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Hyderabad Police</div><a href="tel:040-27852425" style="color:var(--accent);font-size:.9rem">040-27852425</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Pune Police</div><a href="tel:020-26122880" style="color:var(--accent);font-size:.9rem">020-26122880</a></div>
+        <div style="background:var(--bg);padding:10px;border-radius:6px"><div style="color:var(--text);font-weight:600">Ahmedabad Police</div><a href="tel:079-25505555" style="color:var(--accent);font-size:.9rem">079-25505555</a></div>
+      </div>
+      <p style="color:var(--muted);font-size:.8rem;margin-top:12px">💡 To find the exact nearest police station with directions, open Google Maps and search "police station near me".</p>
+      <a href="https://maps.google.com/?q=police+station+near+me" target="_blank" class="btn btn-outline" style="margin-top:10px;display:inline-block;font-size:.9rem">🗺️ Open Google Maps</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const STATIONS = {
+  'mumbai':[{name:'Colaba Police Station',address:'Colaba Causeway, Mumbai',phone:'022-22150218'},{name:'Bandra Police Station',address:'Turner Road, Bandra West, Mumbai',phone:'022-26421161'},{name:'Andheri Police Station',address:'Sahar Road, Andheri East, Mumbai',phone:'022-28361177'}],
+  'delhi':[{name:'Connaught Place PS',address:'Barakhamba Road, New Delhi',phone:'011-23412561'},{name:'Lajpat Nagar PS',address:'Lajpat Nagar-II, New Delhi',phone:'011-29834225'},{name:'Saket PS',address:'Sheikh Sarai, New Delhi',phone:'011-29565102'}],
+  'bengaluru':[{name:'Cubbon Park PS',address:'Raj Bhavan Road, Bengaluru',phone:'080-22942222'},{name:'Koramangala PS',address:'Koramangala 5th Block, Bengaluru',phone:'080-25531885'},{name:'Indiranagar PS',address:'100 Feet Road, Indiranagar, Bengaluru',phone:'080-25251540'}],
+  'chennai':[{name:'T.Nagar PS',address:'Pondy Bazaar, T.Nagar, Chennai',phone:'044-24342450'},{name:'Adyar PS',address:'Adyar, Chennai',phone:'044-24400100'},{name:'Anna Nagar PS',address:'2nd Avenue, Anna Nagar, Chennai',phone:'044-26151970'}],
+  'hyderabad':[{name:'Banjara Hills PS',address:'Road No.12, Banjara Hills, Hyderabad',phone:'040-27850892'},{name:'Cyberabad PS',address:'Madhapur, Hyderabad',phone:'040-27902000'},{name:'Secunderabad PS',address:'MG Road, Secunderabad',phone:'040-27800425'}],
+};
+function searchStations(){
+  const q=document.getElementById('citySearch').value.trim().toLowerCase();
+  const grid=document.getElementById('stationResults');
+  const data=STATIONS[q]||[];
+  grid.innerHTML='';
+  if(!data.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">
+      <p>No hardcoded data for "${q}". Use Google Maps to find stations near you.</p>
+      <a href="https://maps.google.com/?q=police+station+in+${encodeURIComponent(q)}" target="_blank" class="btn btn-outline" style="margin-top:12px">🗺️ Search on Google Maps</a>
+    </div>`;
+    return;
+  }
+  data.forEach(s=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px';
+    card.innerHTML=`
+      <div style="font-weight:700;color:var(--white);margin-bottom:6px">🚔 ${s.name}</div>
+      <div style="color:var(--muted);font-size:.85rem;margin-bottom:14px">📍 ${s.address}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="tel:${s.phone}" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">📞 ${s.phone}</a>
+        <a href="https://maps.google.com/?q=${encodeURIComponent(s.name+' '+s.address)}" target="_blank" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">🗺️ Directions</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+</script>
+{% endblock %}

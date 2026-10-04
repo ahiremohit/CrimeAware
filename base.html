@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{% block title %}CrimeAware India{% endblock %}</title>
+<link rel="manifest" href="/static/manifest.json"/>
+<meta name="theme-color" content="#060d1a"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<script src="/static/js/minichart.js"></script>
+<link rel="stylesheet" href="/static/css/main.css"/>
+<style>
+/* ── MEGA NAV SYSTEM ──────────────────────────────────────── */
+:root {
+  --nav-h: 64px;
+  --nav-bg: rgba(6,13,26,0.92);
+  --nav-border: rgba(255,255,255,0.06);
+  --nav-blur: saturate(180%) blur(20px);
+  --pill-bg: rgba(255,255,255,0.06);
+  --pill-hover: rgba(255,255,255,0.11);
+  --pill-active: rgba(59,130,246,0.18);
+  --pill-active-border: rgba(59,130,246,0.55);
+  --glow: 0 0 24px rgba(59,130,246,0.35);
+  --mega-bg: rgba(8,16,32,0.98);
+  --mega-border: rgba(255,255,255,0.07);
+}
+[data-theme="light"] {
+  --nav-bg: rgba(248,250,252,0.94);
+  --nav-border: rgba(0,0,0,0.07);
+  --pill-bg: rgba(0,0,0,0.04);
+  --pill-hover: rgba(0,0,0,0.08);
+  --pill-active: rgba(37,99,235,0.12);
+  --pill-active-border: rgba(37,99,235,0.4);
+  --mega-bg: rgba(255,255,255,0.99);
+  --mega-border: rgba(0,0,0,0.08);
+  --bg:#f8fafc;--bg2:#fff;--bg3:#f1f5f9;--surface:#fff;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --white:#1e293b;--accent:#2563eb;--accent2:#7c3aed;
+  --primary:#2563eb;--primary-fade:rgba(37,99,235,.1);
+}
+body.high-contrast {
+  --bg:#000;--bg2:#111;--bg3:#222;--surface:#1a1a1a;
+  --text:#fff;--muted:#ddd;--border:#ff0;--primary:#ff0;
+  --primary-fade:rgba(255,255,0,.2);--accent:#ff0;--white:#fff;
+}
+body.high-contrast h1,body.high-contrast h2,body.high-contrast h3,
+body.high-contrast h4,body.high-contrast p,body.high-contrast div,
+body.high-contrast span{color:var(--text)!important}
+body.high-contrast *{border-color:var(--border)!important}
+.goog-te-banner-frame{display:none!important}
+body{top:0!important; font-family:'Space Grotesk',system-ui,sans-serif;}
+
+/* ── NAV SHELL ── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--nav-bg);
+  backdrop-filter: var(--nav-blur);
+  -webkit-backdrop-filter: var(--nav-blur);
+  border-bottom: 1px solid var(--nav-border);
+  z-index: 1000;
+  transition: background .3s, box-shadow .3s;
+}
+.nav.scrolled {
+  box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── LOGO ── */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+.nav-logo .logo-shield {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 16px rgba(99,102,241,0.5);
+  transition: transform .2s, box-shadow .2s;
+}
+.nav-logo:hover .logo-shield {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow: 0 0 24px rgba(99,102,241,0.7);
+}
+.nav-logo .logo-wordmark {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+.nav-logo .logo-wordmark span {
+  color: #3b82f6;
+}
+
+/* ── PRIMARY NAV LINKS (pill style) ── */
+.nav-primary {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-pill {
+  position: relative;
+}
+.nav-pill > a,
+.nav-pill > button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  letter-spacing: 0.01em;
+}
+[data-theme="light"] .nav-pill > a,
+[data-theme="light"] .nav-pill > button {
+  color: rgba(15,23,42,0.72);
+}
+.nav-pill > a:hover,
+.nav-pill > button:hover {
+  background: var(--pill-hover);
+  color: #fff;
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="light"] .nav-pill > a:hover,
+[data-theme="light"] .nav-pill > button:hover {
+  color: #0f172a;
+}
+.nav-pill > a.active,
+.nav-pill > a[aria-current="page"] {
+  background: var(--pill-active);
+  color: #60a5fa;
+  border-color: var(--pill-active-border);
+}
+[data-theme="light"] .nav-pill > a.active {
+  color: #2563eb;
+}
+.nav-pill .chevron {
+  font-size: 0.6rem;
+  opacity: 0.6;
+  transition: transform .2s;
+}
+.nav-pill:hover .chevron { transform: rotate(180deg); }
+
+/* ── MEGA DROPDOWN ── */
+.mega-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--mega-bg);
+  border: 1px solid var(--mega-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: megaIn .18s ease;
+  z-index: 100;
+  min-width: 560px;
+}
+@keyframes megaIn {
+  from { opacity:0; transform:translateX(-50%) translateY(-8px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+.nav-pill:hover .mega-menu,
+.nav-pill:focus-within .mega-menu {
+  display: block;
+}
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.mega-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background .15s;
+  border: 1px solid transparent;
+}
+.mega-item:hover {
+  background: var(--pill-hover);
+  border-color: rgba(255,255,255,0.06);
+}
+.mega-item .mi-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.mega-item .mi-text .mi-title {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--white);
+  display: block;
+}
+.mega-item .mi-text .mi-desc {
+  font-size: 0.73rem;
+  color: var(--muted);
+  display: block;
+  margin-top: 1px;
+  line-height: 1.3;
+}
+.mega-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 4px 12px 8px;
+  grid-column: 1/-1;
+}
+.mega-divider {
+  grid-column: 1/-1;
+  height: 1px;
+  background: var(--mega-border);
+  margin: 6px 0;
+}
+
+/* ── NAV RIGHT ACTIONS ── */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.nav-icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--pill-bg);
+  color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all .18s;
+}
+[data-theme="light"] .nav-icon-btn {
+  border-color: rgba(0,0,0,0.1);
+  color: rgba(15,23,42,0.7);
+  background: rgba(0,0,0,0.04);
+}
+.nav-icon-btn:hover {
+  background: var(--pill-hover);
+  border-color: rgba(255,255,255,0.15);
+  color: #fff;
+  transform: translateY(-1px);
+}
+[data-theme="light"] .nav-icon-btn:hover { color: #0f172a; }
+
+.nav-sos {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.83rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all .18s;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 16px rgba(220,38,38,0.35);
+  animation: sosPulse 3s ease-in-out infinite;
+}
+@keyframes sosPulse {
+  0%,100% { box-shadow: 0 0 16px rgba(220,38,38,0.35); }
+  50%      { box-shadow: 0 0 28px rgba(220,38,38,0.65); }
+}
+.nav-sos:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 32px rgba(220,38,38,0.7);
+}
+
+/* ── MOBILE HAMBURGER ── */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: var(--pill-bg);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .2s;
+  margin-left: auto;
+}
+.nav-burger span {
+  display: block;
+  width: 16px; height: 1.5px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 2px;
+  transition: .3s;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ── */
+.nav-drawer {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0; right: 0;
+  background: var(--mega-bg);
+  border-bottom: 1px solid var(--mega-border);
+  padding: 16px;
+  z-index: 999;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+  max-height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+}
+.nav-drawer.open { display: block; animation: drawerIn .22s ease; }
+@keyframes drawerIn {
+  from { opacity:0; transform:translateY(-12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.drawer-section {
+  margin-bottom: 20px;
+}
+.drawer-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.drawer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: .15s;
+}
+.drawer-item:hover, .drawer-item.active {
+  background: var(--pill-hover);
+  border-color: rgba(255,255,255,0.07);
+}
+.drawer-item .di-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.drawer-item .di-label {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--white);
+}
+.drawer-sos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(220,38,38,0.4);
+}
+.drawer-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.drawer-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--pill-bg);
+  color: var(--white);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: .15s;
+}
+.drawer-actions button:hover { background: var(--pill-hover); }
+
+/* ── LIVE INDICATOR DOT ── */
+.live-dot {
+  width: 6px; height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  animation: livePulse 2s infinite;
+}
+@keyframes livePulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.5; transform:scale(1.4); }
+}
+
+/* ── BODY OFFSET ── */
+body { padding-top: var(--nav-h); }
+main { min-height: calc(100vh - var(--nav-h)); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .nav-primary { display: none; }
+  .nav-burger { display: flex; }
+  .nav-actions .nav-icon-btn { display: none; }
+}
+@media (max-width: 480px) {
+  .nav-sos .sos-text { display: none; }
+  .drawer-grid { grid-template-columns: 1fr; }
+}
+
+
+
+/* Scrollbar for drawer */
+.nav-drawer::-webkit-scrollbar { width:4px; }
+.nav-drawer::-webkit-scrollbar-track { background:transparent; }
+.nav-drawer::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:4px; }
+
+/* ── TOAST / UTILS ── */
+.toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:8px;font-size:.9rem;pointer-events:auto;animation:toastIn .3s ease}
+.toast.success{border-color:#22c55e;color:#22c55e}
+.toast.error{border-color:#ef4444;color:#ef4444}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.badge-new{background:#22c55e;color:#fff;font-size:.6rem;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;vertical-align:middle}
+.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.page{animation:fadeInPage .4s ease}
+@keyframes fadeInPage{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.helpline-card{transition:.2s;display:block}
+.helpline-card:hover{transform:translateY(-3px)}
+.tab-nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.tab-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;font-size:.85rem;transition:.2s}
+.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:480px;width:100%;position:relative}
+.skeleton{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:skel 1.5s infinite}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+[data-theme="light"] .card,[data-theme="light"] .stat-card,[data-theme="light"] .feature-card{background:#fff;border-color:#e2e8f0}
+[data-theme="light"] .stat-value,[data-theme="light"] h1,[data-theme="light"] h2,[data-theme="light"] h3,[data-theme="light"] h4{color:#1e293b}
+[data-theme="light"] .nav-link{color:#1e293b}
+[data-theme="light"] .hero{background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%)}
+[data-theme="light"] .hero h1{color:#1e293b}
+[data-theme="light"] .hero p{color:#64748b}
+[data-theme="light"] .ai-chat-window{background:#fff;border-color:#e2e8f0}
+[data-theme="light"] .chat-message.bot{background:#f1f5f9;color:#1e293b}
+[data-theme="light"] .chat-message.user{background:#2563eb}
+
+
+
+/* ── GOOGLE TRANSLATE HIDE ── */
+.goog-te-banner-frame,.goog-te-gadget,.goog-te-gadget-simple,
+.VIpgJd-ZVi9od-ORHb,.skiptranslate,
+#google_translate_element,#google_translate_element_mobile { display:none!important; }
+body { top:0!important; }
+
+/* ── LANGUAGE BUTTON ── */
+.nav-lang-btn {
+  display:flex; align-items:center; gap:5px;
+  padding:0 11px; height:34px; border-radius:8px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78); font-size:0.82rem;
+  font-weight:500; cursor:pointer; white-space:nowrap;
+  transition:all .18s; font-family:inherit;
+}
+[data-theme=light] .nav-lang-btn { border-color:rgba(0,0,0,.10); color:rgba(15,23,42,.75); background:rgba(0,0,0,.04); }
+.nav-lang-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
+[data-theme=light] .nav-lang-btn:hover { color:#0f172a; }
+
+/* ── LANGUAGE POPUP ── */
+#langPopup {
+  display:none;
+  position:fixed;
+  width:256px;
+  background:#08101e;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.7);
+  z-index:99999;
+}
+[data-theme=light] #langPopup { background:#fff; border-color:rgba(0,0,0,.10); box-shadow:0 16px 48px rgba(0,0,0,.18); }
+#langPopup.open { display:block; animation:lpIn .14s ease; }
+@keyframes lpIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
+.lang-popup-title { font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#475569; display:block; margin-bottom:10px; }
+.lang-grid { display:grid; grid-template-columns:1fr 1fr; gap:3px; }
+.lang-item {
+  display:flex; align-items:center; gap:7px;
+  padding:7px 9px; border-radius:7px; cursor:pointer;
+  font-size:.8rem; color:#94a3b8;
+  border:1px solid transparent; transition:.13s; user-select:none;
+}
+.lang-item:hover { background:rgba(255,255,255,.08); color:#f1f5f9; border-color:rgba(255,255,255,.07); }
+[data-theme=light] .lang-item { color:#475569; }
+[data-theme=light] .lang-item:hover { background:rgba(0,0,0,.06); color:#0f172a; }
+.lang-item.active { background:rgba(59,130,246,.18); color:#60a5fa; border-color:rgba(59,130,246,.4); }
+[data-theme=light] .lang-item.active { background:rgba(37,99,235,.1); color:#2563eb; }
+.lang-flag { font-size:15px; flex-shrink:0; }
+
+/* ── DRAWER LANGUAGE ── */
+.drawer-lang-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; margin-top:8px; }
+.drawer-lang-item {
+  padding:8px 5px; border-radius:8px; cursor:pointer; font-size:.72rem;
+  color:#64748b; border:1px solid rgba(255,255,255,.06);
+  transition:.13s; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:3px; user-select:none;
+}
+.drawer-lang-item:hover,.drawer-lang-item.active { background:rgba(255,255,255,.08); color:#f1f5f9; border-color:rgba(255,255,255,.1); }
+.drawer-lang-item .dl-flag { font-size:17px; }
+.drawer-lang-item .dl-name { font-size:.66rem; }
+
+/* lang items */
+#langGrid .li {
+  padding:7px 9px; border-radius:7px; cursor:pointer;
+  font-size:.8rem; color:#94a3b8; border:1px solid transparent;
+  transition:.12s; user-select:none;
+}
+#langGrid .li:hover { background:rgba(255,255,255,.09); color:#f1f5f9; border-color:rgba(255,255,255,.08); }
+#langGrid .li.active { background:rgba(59,130,246,.18); color:#60a5fa; border-color:rgba(59,130,246,.4); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ULTRA-MODERN NAVBAR
+═══════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+
+    <!-- Logo -->
+    <a href="/" class="nav-logo" aria-label="CrimeAware Home">
+      <div class="logo-shield">🛡️</div>
+      <div class="logo-wordmark">Crime<span>Aware</span></div>
+    </a>
+
+    <!-- Primary Nav — Desktop Mega Menu -->
+    <ul class="nav-primary" role="menubar">
+
+      <!-- Data & Maps -->
+      <li class="nav-pill" role="none">
+        <button role="menuitem" aria-haspopup="true">
+          <span>Data &amp; Maps</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="mega-menu" role="menu">
+          <div class="mega-section-title">Explore Crime Data</div>
+          <div class="mega-grid">
+            <a href="/dashboard" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(59,130,246,.15)">📊</div>
+              <div class="mi-text">
+                <span class="mi-title">Dashboard</span>
+                <span class="mi-desc">All 36 states choropleth map</span>
+              </div>
+            </a>
+            <a href="/analytics" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(99,102,241,.15)">📈</div>
+              <div class="mi-text">
+                <span class="mi-title">Analytics</span>
+                <span class="mi-desc">Trends, rankings, AI insights</span>
+              </div>
+            </a>
+            <a href="/compare" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(139,92,246,.15)">⚖️</div>
+              <div class="mi-text">
+                <span class="mi-title">Compare States</span>
+                <span class="mi-desc">Side-by-side AI verdict</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <!-- Legal Tools -->
+      <li class="nav-pill" role="none">
+        <button role="menuitem" aria-haspopup="true">
+          <span>Legal Tools</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="mega-menu" role="menu">
+          <div class="mega-section-title">Know Your Rights</div>
+          <div class="mega-grid">
+            <a href="/crime-encyclopedia" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(245,158,11,.15)">📖</div>
+              <div class="mi-text">
+                <span class="mi-title">Encyclopedia</span>
+                <span class="mi-desc">20+ crimes, IPC sections, cases</span>
+              </div>
+            </a>
+            <a href="/awareness" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(34,197,94,.15)">📋</div>
+              <div class="mi-text">
+                <span class="mi-title">IPC Guide</span>
+                <span class="mi-desc">Laws, punishments, tips</span>
+              </div>
+            </a>
+            <a href="/rti" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(59,130,246,.15)">📄</div>
+              <div class="mi-text">
+                <span class="mi-title">RTI Draft</span>
+                <span class="mi-desc">AI-powered application writer</span>
+              </div>
+            </a>
+            <a href="/legal-aid" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(16,185,129,.15)">🏛️</div>
+              <div class="mi-text">
+                <span class="mi-title">Legal Aid</span>
+                <span class="mi-desc">NGOs, DLSA, free lawyers</span>
+              </div>
+            </a>
+            <a href="/report" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(239,68,68,.15)">📍</div>
+              <div class="mi-text">
+                <span class="mi-title">Report</span>
+                <span class="mi-desc">Anonymous community pin</span>
+              </div>
+            </a>
+            <a href="/find-police" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(96,165,250,.15)">🚔</div>
+              <div class="mi-text">
+                <span class="mi-title">Find Police</span>
+                <span class="mi-desc">Nearest station locator</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <!-- Safety -->
+      <li class="nav-pill" role="none">
+        <button role="menuitem" aria-haspopup="true">
+          <span>Safety</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="mega-menu" role="menu" style="min-width:420px">
+          <div class="mega-section-title">Personal Safety Tools</div>
+          <div class="mega-grid" style="grid-template-columns:1fr 1fr">
+            <a href="/safety-score" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(34,197,94,.15)">🛡️</div>
+              <div class="mi-text">
+                <span class="mi-title">Safety Score</span>
+                <span class="mi-desc">Your personalised 0–100 score</span>
+              </div>
+            </a>
+            <a href="/quiz" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(168,85,247,.15)">🧠</div>
+              <div class="mi-text">
+                <span class="mi-title">Quiz + XP</span>
+                <span class="mi-desc">40 questions, badges, leaderboard</span>
+              </div>
+            </a>
+            <a href="/badges" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(245,158,11,.15)">🏆</div>
+              <div class="mi-text">
+                <span class="mi-title">Badges</span>
+                <span class="mi-desc">Your achievement collection</span>
+              </div>
+            </a>
+            <a href="/subscribe" class="mega-item" role="menuitem">
+              <div class="mi-icon" style="background:rgba(59,130,246,.15)">📧</div>
+              <div class="mi-text">
+                <span class="mi-title">Weekly Digest</span>
+                <span class="mi-desc">Crime alerts for your state</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <!-- About / API -->
+      <li class="nav-pill" role="none">
+        <a href="/developers" class="" role="menuitem">
+          <span class="live-dot"></span>
+          <span>API</span>
+        </a>
+      </li>
+
+      <li class="nav-pill" role="none">
+        <a href="/about" class="" role="menuitem">About</a>
+      </li>
+
+    </ul>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+      <!-- Dark mode -->
+      <button class="nav-icon-btn" id="darkModeToggle" title="Toggle theme" aria-label="Toggle theme">☀️</button>
+      <!-- High contrast -->
+      <button class="nav-icon-btn" id="toggleContrast" title="High contrast" aria-label="High contrast">🌗</button>
+      <!-- Language Selector -->
+      <div id="langWrapper" style="position:relative">
+        <button id="langToggleBtn" class="nav-lang-btn">
+          🌐 <span id="langCurrentLabel">EN</span> <span style="font-size:.55rem;opacity:.5;margin-left:1px">▼</span>
+        </button>
+        <div id="langPopup" style="display:none;position:fixed;z-index:99999;width:252px;background:#08101f;border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;box-shadow:0 24px 64px rgba(0,0,0,0.75)">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#475569;margin-bottom:10px">Select Language</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px" id="langGrid">
+            <div class="li" data-code="en"  data-label="EN">🇮🇳 English</div>
+            <div class="li" data-code="hi"  data-label="हिं">🇮🇳 हिन्दी</div>
+            <div class="li" data-code="mr"  data-label="मर">🇮🇳 मराठी</div>
+            <div class="li" data-code="ta"  data-label="தமி">🇮🇳 தமிழ்</div>
+            <div class="li" data-code="te"  data-label="తెలు">🇮🇳 తెలుగు</div>
+            <div class="li" data-code="kn"  data-label="ಕನ್">🇮🇳 ಕನ್ನಡ</div>
+            <div class="li" data-code="bn"  data-label="বাং">🇮🇳 বাংলা</div>
+            <div class="li" data-code="gu"  data-label="ગુજ">🇮🇳 ગુજરાતી</div>
+            <div class="li" data-code="ml"  data-label="മലയ">🇮🇳 മലയാളം</div>
+            <div class="li" data-code="pa"  data-label="ਪੰਜ">🇮🇳 ਪੰਜਾਬੀ</div>
+            <div class="li" data-code="ur"  data-label="اردو">🇵🇰 اردو</div>
+            <div class="li" data-code="or"  data-label="ଓଡ଼">🇮🇳 ଓଡ଼ିଆ</div>
+          </div>
+        </div>
+        <div id="google_translate_element" style="display:none"></div>
+      </div>
+      <!-- Login -->
+      <a href="/login" id="nav-login-btn" style="padding:7px 16px;background:var(--accent);color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px">👤 Login</a>
+      <!-- SOS -->
+      <a href="tel:112" class="nav-sos" aria-label="Emergency call 112">
+        <span>🆘</span>
+        <span class="sos-text">112</span>
+      </a>
+      <!-- Burger -->
+      <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ── MOBILE DRAWER ── -->
+<div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Navigation menu">
+
+  <div class="drawer-section">
+    <div class="drawer-section-title">Data &amp; Maps</div>
+    <div class="drawer-grid">
+      <a href="/dashboard"  class="drawer-item">
+        <div class="di-icon" style="background:rgba(59,130,246,.15)">📊</div>
+        <span class="di-label">Dashboard</span>
+      </a>
+      <a href="/analytics"  class="drawer-item">
+        <div class="di-icon" style="background:rgba(99,102,241,.15)">📈</div>
+        <span class="di-label">Analytics</span>
+      </a>
+      <a href="/compare"    class="drawer-item">
+        <div class="di-icon" style="background:rgba(139,92,246,.15)">⚖️</div>
+        <span class="di-label">Compare</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-title">Legal Tools</div>
+    <div class="drawer-grid">
+      <a href="/crime-encyclopedia" class="drawer-item">
+        <div class="di-icon" style="background:rgba(245,158,11,.15)">📖</div>
+        <span class="di-label">Encyclopedia</span>
+      </a>
+      <a href="/awareness"  class="drawer-item">
+        <div class="di-icon" style="background:rgba(34,197,94,.15)">📋</div>
+        <span class="di-label">IPC Guide</span>
+      </a>
+      <a href="/rti"        class="drawer-item">
+        <div class="di-icon" style="background:rgba(59,130,246,.15)">📄</div>
+        <span class="di-label">RTI Draft</span>
+      </a>
+      <a href="/legal-aid"  class="drawer-item">
+        <div class="di-icon" style="background:rgba(16,185,129,.15)">🏛️</div>
+        <span class="di-label">Legal Aid</span>
+      </a>
+      <a href="/report"     class="drawer-item">
+        <div class="di-icon" style="background:rgba(239,68,68,.15)">📍</div>
+        <span class="di-label">Report</span>
+      </a>
+      <a href="/find-police" class="drawer-item">
+        <div class="di-icon" style="background:rgba(96,165,250,.15)">🚔</div>
+        <span class="di-label">Find Police</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-title">Safety &amp; Learning</div>
+    <div class="drawer-grid">
+      <a href="/safety-score" class="drawer-item">
+        <div class="di-icon" style="background:rgba(34,197,94,.15)">🛡️</div>
+        <span class="di-label">Safety Score</span>
+      </a>
+      <a href="/quiz"        class="drawer-item">
+        <div class="di-icon" style="background:rgba(168,85,247,.15)">🧠</div>
+        <span class="di-label">Quiz + XP</span>
+      </a>
+      <a href="/badges"      class="drawer-item">
+        <div class="di-icon" style="background:rgba(245,158,11,.15)">🏆</div>
+        <span class="di-label">Badges</span>
+      </a>
+      <a href="/subscribe"   class="drawer-item">
+        <div class="di-icon" style="background:rgba(59,130,246,.15)">📧</div>
+        <span class="di-label">Subscribe</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="drawer-section" style="margin-top:4px">
+    <div class="drawer-section-title">🌐 Language / भाषा</div>
+    <div class="drawer-lang-grid">
+      <div class="drawer-lang-item active" onclick="setLang('en','EN','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">English</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('hi','हिं','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">हिन्दी</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('mr','मर','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">मराठी</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('ta','தமி','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">தமிழ்</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('te','తెలు','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">తెలుగు</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('kn','ಕನ್','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">ಕನ್ನಡ</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('bn','বাং','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">বাংলা</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('gu','ગુજ','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">ગુજરાતી</span>
+      </div>
+      <div class="drawer-lang-item" onclick="setLang('ml','മലയ','🇮🇳');closeLangDrawer()">
+        <span class="dl-flag">🇮🇳</span><span class="dl-name">മലയാളം</span>
+      </div>
+    </div>
+    <div id="google_translate_element_mobile" style="display:none"></div>
+  </div>
+
+  <div class="drawer-actions">
+    <button id="drawerDarkMode">☀️ Theme</button>
+    <button id="drawerContrast">🌗 Contrast</button>
+  </div>
+
+  <a href="tel:112" class="drawer-sos">🆘 Emergency — Call 112</a>
+</div>
+
+<!-- ── PAGE CONTENT ── -->
+<main>{% block content %}{% endblock %}</main>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="logo-icon">🛡️</span>
+      <span class="logo-text" style="font-family:'Syne',sans-serif;font-weight:800">Crime<strong style="color:#3b82f6">Aware</strong> India</span>
+      <p>Empowering citizens through legal literacy &amp; crime data intelligence.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Platform</h4>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/crime-encyclopedia">Encyclopedia</a>
+      <a href="/compare">Compare States</a>
+      <a href="/analytics">Analytics</a>
+      <a href="/safety-score">Safety Score</a>
+      <a href="/legal-aid">Legal Aid</a>
+    </div>
+    <div class="footer-links">
+      <h4>Tools</h4>
+      <a href="/quiz">Take Quiz</a>
+      <a href="/rti">RTI Draft</a>
+      <a href="/report">Report Incident</a>
+      <a href="/find-police">Find Police</a>
+      <a href="/badges">Badges</a>
+      <a href="/subscribe">Subscribe</a>
+    </div>
+    <div class="footer-links">
+      <h4>Emergency</h4>
+      <a href="tel:112">🆘 112 — Emergency</a>
+      <a href="tel:1091">🛡️ 1091 — Women</a>
+      <a href="tel:1930">💻 1930 — Cyber</a>
+      <a href="tel:1098">🧒 1098 — Child</a>
+      <a href="tel:181">🏠 181 — Domestic Violence</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 CrimeAware India · Data: NCRB, Government of India · For awareness &amp; academic use only</p>
+  </div>
+</footer>
+
+<!-- ── FLOATING AI CHAT ── -->
+<div id="aiChatWrapper" class="ai-chat-wrapper">
+  <div id="aiChatWindow" class="ai-chat-window" style="display:none">
+    <div class="ai-chat-header">
+      <span>⚖️ Legal AI Assistant</span>
+      <button id="closeAiChat" style="background:none;border:none;color:white;cursor:pointer">✖</button>
+    </div>
+    <div id="aiChatBody" class="ai-chat-body">
+      <div class="chat-message bot">Hello! I am your AI Legal Assistant. Ask me about your rights, IPC laws, or safety procedures.</div>
+    </div>
+    <div class="ai-chat-input-area">
+      <input type="text" id="aiChatInput" placeholder="Ask a legal question..."/>
+      <button id="aiChatSend">Send</button>
+    </div>
+  </div>
+  <button id="toggleAiChat" class="ai-chat-toggle-btn">💬 Legal AI</button>
+</div>
+
+<div class="sos-wrapper">
+  <button id="voiceSosBtn" class="sos-btn" title="Emergency WhatsApp SOS">🚨 SOS</button>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ── SCRIPTS ── -->
+<script src="/static/js/main.js"></script>
+<script src="/static/js/chat.js"></script>
+<script src="/static/js/sos.js"></script>
+<script src="/static/js/live_feed.js"></script>
+<script src="/static/js/accessibility.js"></script>
+
+<script>
+/* ══════════════════════════════════════════════
+   CrimeAware — Core UI Scripts
+   Theme | Burger | Language | Service Worker
+══════════════════════════════════════════════ */
+
+// ── 1. DARK/LIGHT THEME ──────────────────────
+(function(){
+  var saved = localStorage.getItem('crimeaware_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  function syncBtn(t) {
+    var b = document.getElementById('darkModeToggle');
+    if (b) b.textContent = t === 'dark' ? '☀️' : '🌙';
+    var d = document.getElementById('drawerDarkMode');
+    if (d) d.textContent = (t === 'dark' ? '☀️' : '🌙') + ' Theme';
+  }
+  syncBtn(saved);
+  function toggle() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('crimeaware_theme', next);
+    syncBtn(next);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    var b1 = document.getElementById('darkModeToggle');
+    var b2 = document.getElementById('drawerDarkMode');
+    if (b1) b1.addEventListener('click', toggle);
+    if (b2) b2.addEventListener('click', toggle);
+    // High contrast
+    if (localStorage.getItem('ca_contrast') === '1') document.body.classList.add('high-contrast');
+    var hc = document.getElementById('toggleContrast');
+    var hcd = document.getElementById('drawerContrast');
+    function toggleContrast() {
+      document.body.classList.toggle('high-contrast');
+      localStorage.setItem('ca_contrast', document.body.classList.contains('high-contrast') ? '1' : '0');
+    }
+    if (hc) hc.addEventListener('click', toggleContrast);
+    if (hcd) hcd.addEventListener('click', toggleContrast);
+  });
+})();
+
+// ── 2. MOBILE BURGER / DRAWER ────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var burger = document.getElementById('navBurger');
+  var drawer = document.getElementById('navDrawer');
+  if (!burger || !drawer) return;
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', function(){
+    var open = drawer.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  drawer.addEventListener('click', function(e){ if(e.target.tagName==='A') closeDrawer(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });
+  window.closeLangDrawer = closeDrawer;
+});
+
+// ── 3. NAV SCROLL SHADOW ─────────────────────
+window.addEventListener('scroll', function(){
+  var nav = document.getElementById('nav');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 10);
+}, {passive:true});
+
+// ── 4. LANGUAGE SWITCHER ─────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var btn   = document.getElementById('langToggleBtn');
+  var popup = document.getElementById('langPopup');
+  var lbl   = document.getElementById('langCurrentLabel');
+  if (!btn || !popup) return;
+
+  // Style popup for light theme too
+  function themePopup() {
+    var light = document.documentElement.getAttribute('data-theme') === 'light';
+    popup.style.background = light ? '#ffffff' : '#08101f';
+    popup.style.borderColor = light ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)';
+    popup.style.color = light ? '#1e293b' : '#f1f5f9';
+  }
+
+  // Toggle open/close
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (popup.style.display === 'block') {
+      popup.style.display = 'none';
+      return;
+    }
+    themePopup();
+    // Position below button
+    var r = btn.getBoundingClientRect();
+    popup.style.top  = (r.bottom + 6) + 'px';
+    // Align right edge of popup with right edge of button
+    var left = r.right - 252;
+    if (left < 4) left = 4;
+    popup.style.left = left + 'px';
+    popup.style.display = 'block';
+  });
+
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    if (!btn.contains(e.target) && !popup.contains(e.target)) {
+      popup.style.display = 'none';
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') popup.style.display = 'none';
+  });
+
+  // Wire up language items via data attributes (no onclick in HTML)
+  var items = document.querySelectorAll('#langGrid .li');
+  items.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var code  = item.getAttribute('data-code');
+      var label = item.getAttribute('data-label');
+      pickLang(code, label, item);
+    });
+  });
+
+  // Restore saved state
+  var savedCode  = localStorage.getItem('ca_lang')       || 'en';
+  var savedLabel = localStorage.getItem('ca_lang_label') || 'EN';
+  if (lbl) lbl.textContent = savedLabel;
+  items.forEach(function(it) {
+    it.classList.toggle('active', it.getAttribute('data-code') === savedCode);
+  });
+  if (savedCode !== 'en') {
+    setTimeout(function() { applyGT(savedCode); }, 1600);
+  }
+
+  function pickLang(code, label, clickedItem) {
+    popup.style.display = 'none';
+    if (lbl) lbl.textContent = label;
+    items.forEach(function(it) { it.classList.remove('active'); });
+    if (clickedItem) clickedItem.classList.add('active');
+    localStorage.setItem('ca_lang', code);
+    localStorage.setItem('ca_lang_label', label);
+
+    if (code === 'en') {
+      // Remove cookies and reload
+      ['/', ''].forEach(function(path) {
+        document.cookie = 'googtrans=; path=' + path + '; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+        document.cookie = 'googtrans=; path=' + path + '; domain=.' + location.hostname + '; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+      });
+      localStorage.removeItem('ca_lang');
+      localStorage.removeItem('ca_lang_label');
+      location.reload();
+    } else {
+      document.cookie = 'googtrans=/en/' + code + '; path=/';
+      document.cookie = 'googtrans=/en/' + code + '; path=/; domain=.' + location.hostname;
+      applyGT(code);
+    }
+  }
+
+  // Also wire drawer items
+  var drawerItems = document.querySelectorAll('.drawer-lang-item');
+  drawerItems.forEach(function(di) {
+    di.addEventListener('click', function() {
+      var oc = di.getAttribute('onclick') || '';
+      // Extract code from onclick="setLang('hi',...)"
+      var m = oc.match(/setLang\('([^']+)','([^']+)'/);
+      if (m) pickLang(m[1], m[2], null);
+      // Close mobile drawer
+      var drawer = document.getElementById('navDrawer');
+      var burger = document.getElementById('navBurger');
+      if (drawer) drawer.classList.remove('open');
+      if (burger) { burger.classList.remove('open'); burger.setAttribute('aria-expanded','false'); }
+      document.body.style.overflow = '';
+    });
+  });
+});
+
+function applyGT(code) {
+  var tries = 0;
+  (function attempt() {
+    var sel = document.querySelector('.goog-te-combo');
+    if (sel) {
+      sel.value = code;
+      sel.dispatchEvent(new Event('change'));
+    } else if (tries++ < 20) {
+      setTimeout(attempt, 300);
+    }
+  })();
+}
+
+// ── 5. SERVICE WORKER ────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/static/sw.js').catch(function(){});
+  });
+}
+</script>
+
+</script>
+
+<script type="text/javascript">
+// Google Translate initialisation
+function googleTranslateElementInit(){
+  try {
+    new google.translate.TranslateElement(
+      { pageLanguage:'en', includedLanguages:'hi,mr,ta,te,kn,bn,gu,ml,pa,ur,or,en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false },
+      'google_translate_element'
+    );
+    new google.translate.TranslateElement(
+      { pageLanguage:'en', includedLanguages:'hi,mr,ta,te,kn,bn,gu,ml,pa,ur,or,en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false },
+      'google_translate_element_mobile'
+    );
+  } catch(e){}
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+
+
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/static/sw.js').catch(function(){});
+  });
+}
+</script>
+{% block scripts %}{% endblock %}
+<script>
+// Update nav login button if user already logged in
+(function(){
+  try {
+    var u = JSON.parse(localStorage.getItem('ca_user'));
+    if (u && u.name) {
+      var btn = document.getElementById('nav-login-btn');
+      if (btn) btn.textContent = '👤 ' + u.name.split(' ')[0];
+    }
+  } catch(e){}
+})();
+</script>
+</body>
+</html>

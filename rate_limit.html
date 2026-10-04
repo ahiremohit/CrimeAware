@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Rate Limited — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="display:flex;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px">
+  <div>
+    <div style="font-size:5rem;margin-bottom:20px">🚦</div>
+    <h1 style="color:var(--white);font-size:3rem">429</h1>
+    <h2 style="color:var(--muted);margin-bottom:16px">Too Many Requests</h2>
+    <p style="color:var(--muted);max-width:400px;margin:0 auto 32px">You have made too many requests. Please wait a moment before trying again. This limit protects our platform for all users.</p>
+    <a href="/" class="btn btn-primary">🏠 Go Home</a>
+    <p style="color:var(--muted);margin-top:32px;font-size:.9rem">Emergency? Call <a href="tel:112" style="color:var(--accent)">112</a></p>
+  </div>
+</div>
+{% endblock %}

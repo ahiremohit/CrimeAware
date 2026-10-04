@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}RTI Draft Generator — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:1100px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:40px" class="fade-up">
+      <div class="eyebrow">RTI Act, 2005</div>
+      <h1 style="color:var(--white)">AI-Powered RTI Draft Generator</h1>
+      <p style="color:var(--muted)">Generate a legally correct RTI application using Gemini AI. Fill in the details, get an AI-drafted letter, then print or download as DOCX.</p>
+    </div>
+    <div style="display:flex;gap:30px;flex-wrap:wrap">
+      <!-- Form -->
+      <div style="flex:1;min-width:300px;background:var(--bg2);padding:25px;border-radius:12px;border:1px solid var(--border)">
+        <h3 style="margin-bottom:20px;color:var(--white)">1. Enter Details</h3>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Department / Public Authority *</label>
+            <input type="text" id="deptInput" placeholder="e.g. Office of the Commissioner of Police" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">State *</label>
+            <select id="stateInput" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px">
+              <option value="">— Select State —</option>
+              {% for s in states_list %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+            </select>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">City</label>
+            <input type="text" id="officeLineInput" placeholder="e.g. Mumbai" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Subject / Information Title *</label>
+            <input type="text" id="subjectInput" placeholder="e.g. Seeking crime statistics for Bandra PS in 2023" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Particulars of Information Sought *</label>
+            <textarea id="particularsInput" rows="5" placeholder="1. Number of FIRs registered in 2023&#10;2. Number of cases solved..." style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box"></textarea>
+          </div>
+          <h4 style="margin-top:8px;color:var(--white)">Applicant Details</h4>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Your Full Name</label>
+            <input type="text" id="nameInput" placeholder="Your Name" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Your Address</label>
+            <textarea id="addressInput" rows="2" placeholder="123 Street, City, Pincode" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box"></textarea>
+          </div>
+          <div>
+            <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:4px">Date of Filing</label>
+            <input type="date" id="dateInput" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:4px;box-sizing:border-box">
+          </div>
+        </div>
+        <button onclick="generateDraft()" id="generateBtn" class="btn btn-primary" style="margin-top:20px;width:100%;padding:12px">
+          <span id="generateBtnText">✨ Generate with AI</span>
+        </button>
+        <p style="color:var(--muted);font-size:.8rem;margin-top:8px;text-align:center">Uses Gemini AI · Falls back to standard template if API unavailable</p>
+      </div>
+
+      <!-- Preview -->
+      <div style="flex:1.2;min-width:380px;display:flex;flex-direction:column">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <h3 style="color:var(--white)">2. Preview &amp; Export</h3>
+          <div style="display:flex;gap:8px">
+            <button onclick="printRTI()" id="printBtn" class="btn btn-outline" style="border-color:var(--accent);color:var(--accent);display:none;font-size:.85rem;padding:8px 14px">🖨️ Print PDF</button>
+          </div>
+        </div>
+        <div id="rtiPreviewBody" style="background:#fff;color:#000;padding:40px;border-radius:4px;font-family:'Times New Roman',serif;line-height:1.7;display:none;box-shadow:0 4px 10px rgba(0,0,0,.3)">
+          <div style="text-align:center;font-weight:bold;font-size:1.15rem;text-decoration:underline;margin-bottom:24px">APPLICATION UNDER RIGHT TO INFORMATION ACT, 2005</div>
+          <div style="margin-bottom:20px">
+            To,<br>The Public Information Officer (PIO)<br>
+            <b><span id="pDept">[Department]</span></b><br>
+            <span id="pOffice">[City, State]</span>
+          </div>
+          <div style="margin-bottom:16px"><b>Date:</b> <span id="pDate">[Date]</span></div>
+          <div style="margin-bottom:16px"><b>Subject:</b> Application seeking information under RTI Act, 2005 — <span id="pSubject">[Subject]</span></div>
+          <div style="margin-bottom:16px">Respected Sir/Madam,</div>
+          <div id="pBodyText" style="margin-bottom:20px;white-space:pre-wrap">[AI-generated body will appear here]</div>
+          <div style="margin-top:32px;display:flex;justify-content:space-between">
+            <div>
+              <b>RTI Fee:</b> Rs. 10/- (enclosed)<br>
+              <b>Place:</b> <span id="pCity">[City]</span>
+            </div>
+            <div style="text-align:right">
+              Yours faithfully,<br><br><br>
+              <b><span id="pName">[Applicant Name]</span></b><br>
+              <div id="pAddress" style="white-space:pre-wrap">[Address]</div>
+            </div>
+          </div>
+        </div>
+        <div id="emptyState" style="background:var(--bg3);flex:1;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px dashed var(--border);min-height:300px">
+          Fill the form and click Generate
+        </div>
+
+        <!-- RTI Info Panel -->
+        <div style="margin-top:20px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px">
+          <h4 style="color:var(--white);margin-bottom:10px">📌 RTI Act Key Facts</h4>
+          <ul style="color:var(--muted);font-size:.88rem;padding-left:18px;line-height:1.8;margin:0">
+            <li>Application fee: <strong style="color:var(--text)">Rs. 10</strong> (BPL applicants exempt)</li>
+            <li>Response deadline: <strong style="color:var(--text)">30 days</strong> (48 hours if life/liberty)</li>
+            <li>1st Appeal: within <strong style="color:var(--text)">30 days</strong> to Appellate Authority</li>
+            <li>2nd Appeal: within <strong style="color:var(--text)">90 days</strong> to CIC/SIC</li>
+            <li>Penalty for delay: <strong style="color:var(--text)">Rs. 250/day</strong> up to Rs. 25,000</li>
+            <li>Online filing: <a href="https://rtionline.gov.in" target="_blank" style="color:var(--accent)">rtionline.gov.in</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@media print{body *{visibility:hidden}#rtiPreviewBody,#rtiPreviewBody *{visibility:visible}#rtiPreviewBody{position:absolute;left:0;top:0;width:100%;margin:0;padding:20px;box-shadow:none}}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('dateInput').valueAsDate = new Date();
+
+async function generateDraft(){
+  const dept = document.getElementById('deptInput').value.trim();
+  const state = document.getElementById('stateInput').value;
+  const city = document.getElementById('officeLineInput').value.trim();
+  const subject = document.getElementById('subjectInput').value.trim();
+  const particulars = document.getElementById('particularsInput').value.trim();
+  const name = document.getElementById('nameInput').value.trim();
+  const address = document.getElementById('addressInput').value.trim();
+  const dateVal = document.getElementById('dateInput').value;
+  const dateStr = dateVal ? new Date(dateVal).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
+
+  if(!dept || !subject || !particulars){
+    alert('Please fill in Department, Subject, and Particulars fields.');
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  const btnText = document.getElementById('generateBtnText');
+  btn.disabled = true;
+  btnText.textContent = '⏳ Generating with AI...';
+
+  try {
+    const res = await fetch('/api/rti-generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({department:dept, state, subject, particulars, name})
+    });
+    const data = await res.json();
+    const bodyText = data.draft || particulars;
+
+    document.getElementById('pDept').textContent = dept;
+    document.getElementById('pOffice').textContent = [city, state].filter(Boolean).join(', ');
+    document.getElementById('pSubject').textContent = subject;
+    document.getElementById('pBodyText').textContent = bodyText;
+    document.getElementById('pName').textContent = name || '[Your Name]';
+    document.getElementById('pAddress').textContent = address || '[Your Address]';
+    document.getElementById('pDate').textContent = dateStr;
+    document.getElementById('pCity').textContent = city || '[City]';
+
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('rtiPreviewBody').style.display = 'block';
+    document.getElementById('printBtn').style.display = 'inline-block';
+  } catch(e) {
+    alert('Error generating draft. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = '✨ Generate with AI';
+  }
+}
+
+function printRTI(){ window.print(); }
+</script>
+{% endblock %}

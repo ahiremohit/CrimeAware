@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Open API — CrimeAware India{% endblock %}
+
+{% block content %}
+<div class="page" style="padding: 40px 20px;">
+    <div class="container" style="max-width: 900px; margin: 0 auto; background: var(--bg2); padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        
+        <div style="text-align: center; margin-bottom: 40px;" class="fade-up">
+            <div class="eyebrow">Open Data Initiative</div>
+            <h1 style="color:var(--white);">CrimeAware API v1</h1>
+            <p style="color:var(--muted);">Access real-time predictions, crime stats, and localized safety information programmatically. Free for researchers, NGOs, and students.</p>
+        </div>
+        
+        <div style="margin-bottom: 40px;">
+            <h2 style="color:var(--white); margin-bottom:15px;">Base URL</h2>
+            <div style="background:var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border); font-family:monospace; color:var(--accent);">
+                https://crimeaware.india/api/v1
+            </div>
+            <p style="color:var(--muted); margin-top:10px; font-size:0.9rem;">(Use your local host during development: http://localhost:5000/api/v1)</p>
+        </div>
+        
+        <h2 style="color:var(--white); margin-bottom:20px;">Endpoints</h2>
+        
+        <!-- Endpoint 1 -->
+        <div style="background:var(--surface); border:1px solid var(--border); border-left: 4px solid var(--success); border-radius:8px; padding:20px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <span style="background:var(--success); color:white; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:0.9rem;">GET</span>
+                <span style="font-family:monospace; font-size:1.1rem; color:var(--white);">/states</span>
+            </div>
+            <p style="color:var(--muted); margin-bottom:15px;">Retrieve crime statistics and ML forecast data for all 36 Indian States and Union Territories.</p>
+            <div style="background:var(--bg); padding:15px; border-radius:6px; font-family:monospace; color:var(--muted); overflow-x:auto;">
+                curl -X GET http://localhost:5000/api/v1/states
+            </div>
+        </div>
+
+        <!-- Endpoint 2 -->
+        <div style="background:var(--surface); border:1px solid var(--border); border-left: 4px solid var(--success); border-radius:8px; padding:20px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <span style="background:var(--success); color:white; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:0.9rem;">GET</span>
+                <span style="font-family:monospace; font-size:1.1rem; color:var(--white);">/state/&lt;name&gt;</span>
+            </div>
+            <p style="color:var(--muted); margin-bottom:15px;">Retrieve specific crime statistics by querying the exact state or UT name.</p>
+            <div style="background:var(--bg); padding:15px; border-radius:6px; font-family:monospace; color:var(--muted); overflow-x:auto;">
+                curl -X GET http://localhost:5000/api/v1/state/maharashtra
+            </div>
+        </div>
+        
+        <!-- Endpoint 3 -->
+        <div style="background:var(--surface); border:1px solid var(--border); border-left: 4px solid var(--info); border-radius:8px; padding:20px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <span style="background:var(--info); color:white; padding:4px 10px; border-radius:4px; font-weight:bold; font-size:0.9rem;">GET</span>
+                <span style="font-family:monospace; font-size:1.1rem; color:var(--white);">/export/csv</span>
+            </div>
+            <p style="color:var(--muted); margin-bottom:15px;">Download the entire combined dataset (Historical + AI Predictions) as a CSV file for offline use.</p>
+            <div style="background:var(--bg); padding:15px; border-radius:6px; font-family:monospace; color:var(--muted); overflow-x:auto;">
+                curl -X GET http://localhost:5000/export/csv -o dataset.csv
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

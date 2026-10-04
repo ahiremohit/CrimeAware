@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Legal Aid Directory — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:1100px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:36px" class="fade-up">
+      <div class="eyebrow">Find Help Near You</div>
+      <h1 style="color:var(--white)">🏛️ Legal Aid Directory</h1>
+      <p style="color:var(--muted)">Free and affordable legal help — NGOs, District Legal Services Authorities, cyber cells, and support organisations across India.</p>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;background:var(--bg2);padding:20px;border-radius:12px;border:1px solid var(--border)" class="reveal">
+      <select id="fState" onchange="filterAid()" style="flex:1;min-width:160px;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:6px">
+        <option value="">All States</option>
+        <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option>
+        <option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option>
+        <option>Haryana</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
+        <option>Maharashtra</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+        <option>Tamil Nadu</option><option>Telangana</option><option>Uttar Pradesh</option><option>West Bengal</option>
+      </select>
+      <select id="fType" onchange="filterAid()" style="flex:1;min-width:140px;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:6px">
+        <option value="">All Types</option>
+        <option>DLSA</option><option>NGO</option><option>Cyber Cell</option><option>Commission</option>
+      </select>
+      <select id="fSpec" onchange="filterAid()" style="flex:1;min-width:160px;padding:10px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:6px">
+        <option value="">All Specialisations</option>
+        <option>Domestic Violence</option><option>Cybercrime</option><option>Child Rights</option>
+        <option>Women's Rights</option><option>RTI</option><option>General Legal Aid</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:8px;color:var(--muted);cursor:pointer;padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap">
+        <input type="checkbox" id="fFree" onchange="filterAid()" style="accent-color:var(--accent)"> Free Only
+      </label>
+    </div>
+
+    <div id="aidCount" style="color:var(--muted);margin-bottom:16px;font-size:.9rem"></div>
+    <div id="aidGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px"></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const AID_DATA = [
+  {name:"National Commission for Women (NCW)",type:"Commission",state:"National",city:"New Delhi",phone:"011-26942369",email:"ncw@nic.in",website:"http://ncw.nic.in",specialization:["Women's Rights","Domestic Violence"],languages:["Hindi","English"],is_free:true,desc:"Apex national body for safeguarding rights and legal entitlements of women."},
+  {name:"Childline India Foundation",type:"NGO",state:"National",city:"Mumbai",phone:"1098",email:"childline1098@gmail.com",website:"http://childlineindia.org",specialization:["Child Rights","Child Abuse"],languages:["Hindi","English","Regional"],is_free:true,desc:"24-hour free helpline and support for children in distress across 500+ districts."},
+  {name:"iCall — Psychological Helpline (TISS)",type:"NGO",state:"National",city:"Mumbai",phone:"9152987821",email:"icall@tiss.edu",website:"https://icallhelpline.org",specialization:["Mental Health","Trauma","General Legal Aid"],languages:["Hindi","English"],is_free:true,desc:"Free counselling and mental health support by TISS Mumbai for crime victims and individuals in distress."},
+  {name:"Cyber Crime Coordination Centre (I4C)",type:"Cyber Cell",state:"National",city:"New Delhi",phone:"1930",email:"",website:"https://cybercrime.gov.in",specialization:["Cybercrime"],languages:["Hindi","English"],is_free:true,desc:"India's national cyber crime reporting portal and helpline. Report online fraud, stalking, and digital crimes."},
+  {name:"Majlis Law — Legal Aid for Women",type:"NGO",state:"Maharashtra",city:"Mumbai",phone:"022-23772370",email:"majlis@vsnl.com",website:"",specialization:["Women's Rights","Domestic Violence","Sexual Harassment"],languages:["Hindi","English","Marathi"],is_free:true,desc:"Legal aid and advocacy organisation for women facing violence, discrimination, and family law issues."},
+  {name:"Sneha India Foundation",type:"NGO",state:"Maharashtra",city:"Mumbai",phone:"044-24640050",email:"help@snehindia.org",website:"http://snehindia.org",specialization:["Domestic Violence","Women's Rights"],languages:["English","Hindi","Tamil"],is_free:true,desc:"Crisis intervention, shelter, and legal support for women survivors of violence."},
+  {name:"Vanangana Women's Resource Center",type:"NGO",state:"Uttar Pradesh",city:"Chitrakoot",phone:"05198-242842",email:"vanangana_chi@yahoo.com",website:"",specialization:["Domestic Violence","Women's Rights","General Legal Aid"],languages:["Hindi"],is_free:true,desc:"Grassroots women's rights organisation providing legal aid and support to rural women in Bundelkhand."},
+  {name:"Delhi State Legal Services Authority (DSLSA)",type:"DLSA",state:"Delhi",city:"New Delhi",phone:"011-23074729",email:"dslsa-dla@nic.in",website:"http://dslsa.org",specialization:["General Legal Aid","RTI"],languages:["Hindi","English"],is_free:true,desc:"Provides free legal aid to all eligible persons in Delhi including women, SC/ST, and economically weaker sections."},
+  {name:"Maharashtra State Legal Services Authority",type:"DLSA",state:"Maharashtra",city:"Mumbai",phone:"022-22620867",email:"mslsa@nic.in",website:"http://mslsa.nic.in",specialization:["General Legal Aid","Domestic Violence"],languages:["Marathi","Hindi","English"],is_free:true,desc:"Free legal aid and Lok Adalat services across Maharashtra."},
+  {name:"Karnataka State Legal Services Authority",type:"DLSA",state:"Karnataka",city:"Bengaluru",phone:"080-22112345",email:"kslsa@nic.in",website:"http://kslsa.kar.nic.in",specialization:["General Legal Aid"],languages:["Kannada","English","Hindi"],is_free:true,desc:"Free legal aid including Lok Adalats, legal awareness camps, and para-legal volunteer services."},
+  {name:"Tamil Nadu State Legal Services Authority",type:"DLSA",state:"Tamil Nadu",city:"Chennai",phone:"044-25210134",email:"tnslsa@nic.in",website:"http://tnslsa.tn.gov.in",specialization:["General Legal Aid"],languages:["Tamil","English"],is_free:true,desc:"Free legal services and mediation for eligible citizens in Tamil Nadu."},
+  {name:"Rajasthan State Legal Services Authority",type:"DLSA",state:"Rajasthan",city:"Jaipur",phone:"0141-2227481",email:"rslsa@rajasthan.gov.in",website:"",specialization:["General Legal Aid","Women's Rights"],languages:["Hindi","English"],is_free:true,desc:"Free legal aid and Lok Adalat services across Rajasthan including mobile legal aid vans."},
+  {name:"Uttar Pradesh State Legal Services Authority",type:"DLSA",state:"Uttar Pradesh",city:"Lucknow",phone:"0522-2235729",email:"upslsa@nic.in",website:"http://upslsa.in",specialization:["General Legal Aid"],languages:["Hindi","English","Urdu"],is_free:true,desc:"Free legal services for weaker sections across 75 districts of Uttar Pradesh."},
+  {name:"Gujarat State Legal Services Authority",type:"DLSA",state:"Gujarat",city:"Ahmedabad",phone:"079-27560300",email:"gslsa@gujarathighcourt.nic.in",website:"",specialization:["General Legal Aid"],languages:["Gujarati","Hindi","English"],is_free:true,desc:"Legal aid and paralegal training services across Gujarat."},
+  {name:"Kerala State Legal Services Authority",type:"DLSA",state:"Kerala",city:"Ernakulam",phone:"0484-2394006",email:"klsa@nic.in",website:"http://kelsa.nic.in",specialization:["General Legal Aid"],languages:["Malayalam","English"],is_free:true,desc:"Free legal services with special focus on women, children, and coastal fishing communities in Kerala."},
+  {name:"National Commission for SC/ST",type:"Commission",state:"National",city:"New Delhi",phone:"011-23388427",email:"",website:"http://ncsc.nic.in",specialization:["General Legal Aid"],languages:["Hindi","English"],is_free:true,desc:"Constitutional body safeguarding rights of Scheduled Castes and Scheduled Tribes across India."},
+  {name:"Cyber Crime Cell — Bengaluru",type:"Cyber Cell",state:"Karnataka",city:"Bengaluru",phone:"080-22094498",email:"cybercrime.blr@ksp.gov.in",website:"https://cybercrime.gov.in",specialization:["Cybercrime"],languages:["Kannada","English","Hindi"],is_free:true,desc:"Dedicated cyber crime investigation cell for Bengaluru city handling online fraud, hacking, and digital crimes."},
+  {name:"Cyber Crime Cell — Mumbai",type:"Cyber Cell",state:"Maharashtra",city:"Mumbai",phone:"022-26341949",email:"cybercell@mahapolice.gov.in",website:"https://cybercrime.gov.in",specialization:["Cybercrime"],languages:["Marathi","Hindi","English"],is_free:true,desc:"Mumbai Police's cyber crime unit handling digital fraud, identity theft, and online harassment complaints."},
+  {name:"Cyber Crime Cell — Delhi",type:"Cyber Cell",state:"Delhi",city:"New Delhi",phone:"011-25820000",email:"cybercell@delhipolice.gov.in",website:"https://cybercrime.gov.in",specialization:["Cybercrime"],languages:["Hindi","English"],is_free:true,desc:"Delhi Police cyber crime unit. File complaints online at cybercrime.gov.in or call 1930."},
+  {name:"HAQ Centre for Child Rights",type:"NGO",state:"Delhi",city:"New Delhi",phone:"011-26517688",email:"haqcrc@gmail.com",website:"http://haqcrc.org",specialization:["Child Rights","Child Abuse"],languages:["Hindi","English"],is_free:true,desc:"Research, advocacy and legal support for child rights — POCSO cases, child labour, and trafficking."},
+  {name:"iHope — Integrated Help for People",type:"NGO",state:"Maharashtra",city:"Pune",phone:"020-25534994",email:"",website:"",specialization:["General Legal Aid","Women's Rights"],languages:["Marathi","Hindi","English"],is_free:true,desc:"Community legal support for marginalised groups in Pune including FIR assistance and court accompaniment."},
+];
+
+function filterAid(){
+  const fState = document.getElementById('fState').value.toLowerCase();
+  const fType = document.getElementById('fType').value.toLowerCase();
+  const fSpec = document.getElementById('fSpec').value;
+  const fFree = document.getElementById('fFree').checked;
+
+  let filtered = AID_DATA.filter(a => {
+    if(fState && a.state.toLowerCase() !== fState && a.state !== 'National') return false;
+    if(fType && a.type.toLowerCase() !== fType) return false;
+    if(fSpec && !a.specialization.includes(fSpec)) return false;
+    if(fFree && !a.is_free) return false;
+    return true;
+  });
+
+  document.getElementById('aidCount').textContent = `Showing ${filtered.length} organisation${filtered.length!==1?'s':''}`;
+  const grid = document.getElementById('aidGrid');
+  grid.innerHTML = '';
+  if(!filtered.length){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">No organisations found matching your filters.</div>';
+    return;
+  }
+  filtered.forEach(a => {
+    const card = document.createElement('div');
+    card.style.cssText='background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+        <div style="flex:1">
+          <div style="font-weight:700;color:var(--white);font-size:1rem;line-height:1.3">${a.name}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+            <span style="background:var(--bg);border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:10px;font-size:.75rem">${a.type}</span>
+            ${a.is_free?'<span style="background:rgba(34,197,94,.1);border:1px solid #22c55e;color:#22c55e;padding:2px 8px;border-radius:10px;font-size:.75rem">Free</span>':''}
+          </div>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;line-height:1.5">${a.desc}</p>
+      <div style="color:var(--muted);font-size:.8rem;margin-bottom:12px">📍 ${a.city}, ${a.state}</div>
+      <div style="color:var(--text);font-size:.8rem;margin-bottom:12px">🗣️ ${a.languages.join(', ')}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${a.phone?`<a href="tel:${a.phone}" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">📞 ${a.phone}</a>`:''}
+        ${a.email?`<a href="mailto:${a.email}" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">✉️ Email</a>`:''}
+        ${a.phone?`<a href="https://wa.me/91${a.phone.replace(/[^0-9]/g,'')}?text=Hi%2C+I+need+legal+help+with+${encodeURIComponent(a.specialization[0])}" target="_blank" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">💬 WhatsApp</a>`:''}
+        ${a.website?`<a href="${a.website}" target="_blank" class="btn btn-outline" style="font-size:.8rem;padding:6px 12px">🌐 Website</a>`:''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+filterAid();
+</script>
+{% endblock %}

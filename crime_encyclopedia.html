@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% block title %}Crime Encyclopedia — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:1100px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:36px" class="fade-up">
+      <div class="eyebrow">Legal Reference</div>
+      <h1 style="color:var(--white)">📖 Crime Encyclopedia</h1>
+      <p style="color:var(--muted)">Detailed legal guide for major crimes under Indian law — IPC sections, punishments, landmark cases, and victim guidance.</p>
+    </div>
+
+    <!-- Search + Filter -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px" class="reveal">
+      <input type="text" id="encSearch" placeholder="🔍 Search crimes, IPC sections..." oninput="filterCrimes()" style="flex:1;min-width:200px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);color:var(--white);border-radius:8px;font-size:1rem">
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="catFilters">
+        <button class="cat-btn active" onclick="setCat('')">All</button>
+        <button class="cat-btn" onclick="setCat('Violent')">⚔️ Violent</button>
+        <button class="cat-btn" onclick="setCat('Cyber')">💻 Cyber</button>
+        <button class="cat-btn" onclick="setCat('Sexual')">🛡️ Sexual</button>
+        <button class="cat-btn" onclick="setCat('Financial')">💰 Financial</button>
+        <button class="cat-btn" onclick="setCat('Domestic')">🏠 Domestic</button>
+        <button class="cat-btn" onclick="setCat('Narcotics')">💊 Narcotics</button>
+        <button class="cat-btn" onclick="setCat('Traffic')">🚗 Traffic</button>
+        <button class="cat-btn" onclick="setCat('White-collar')">🏛️ White-collar</button>
+      </div>
+    </div>
+
+    <div id="crimeList"></div>
+  </div>
+</div>
+
+<style>
+.cat-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;transition:.2s}
+.cat-btn:hover,.cat-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.enc-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.enc-header{padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.enc-header:hover{background:var(--bg3)}
+.enc-body{display:none;padding:20px;border-top:1px solid var(--border)}
+.enc-body.open{display:block}
+.tab-nav{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;font-size:.85rem;transition:.2s}
+.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.info-item{background:var(--bg);padding:12px;border-radius:8px;font-size:.85rem}
+.info-item .lbl{color:var(--muted);font-size:.75rem;margin-bottom:4px}
+.info-item .val{color:var(--text);font-weight:600}
+.step-list{counter-reset:steps;padding:0;list-style:none}
+.step-list li{counter-increment:steps;padding:8px 0 8px 40px;position:relative;border-bottom:1px solid var(--border);color:var(--text);font-size:.9rem;line-height:1.5}
+.step-list li:before{content:counter(steps);position:absolute;left:0;top:8px;background:var(--primary);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+</style>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const CRIMES = [
+  {
+    name:"Murder", section:"IPC 302", icon:"⚔️", category:"Violent",
+    desc:"The intentional and unlawful killing of another human being. One of the most serious crimes under Indian law.",
+    punishment:"Death Penalty or Life Imprisonment + Fine",
+    punishMin:"Life Imprisonment", punishMax:"Death Penalty",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court",
+    cases:["Bachan Singh v. State of Punjab (1980) — Supreme Court upheld constitutional validity of death penalty for rarest of rare cases","Machhi Singh v. State of Punjab (1983) — SC laid down guidelines for when death penalty applies"],
+    immediateSteps:["Call 112 immediately","Do not disturb the crime scene — preserve all evidence","Note details of any suspects seen nearby","Give a detailed statement to police","Request a copy of the FIR under your rights"],
+    doNot:["Do not move the body or touch anything at the scene","Do not clean up before police arrive","Do not negotiate with suspects or their families","Do not post crime scene photos on social media"],
+    helpline:"112 — Emergency Police",
+    prevention:"Install CCTV, use well-lit routes, report suspicious activity to police immediately."
+  },
+  {
+    name:"Rape / Sexual Assault", section:"IPC 375 / 376", icon:"🛡️", category:"Sexual",
+    desc:"Any non-consensual sexual act committed against a person. IPC 375 defines rape; IPC 376 prescribes punishment.",
+    punishment:"Minimum 10 years to Life Imprisonment. Gang rape or rape of minor: Life Imprisonment or Death Penalty",
+    punishMin:"10 years RI", punishMax:"Death Penalty (minors/gang rape)",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court (Fast Track Court for POCSO cases)",
+    cases:["Mukesh v. State of NCT Delhi (Nirbhaya, 2017) — SC upheld death penalty for brutality in gang rape","Tukaram v. State of Maharashtra (1979) — led to 1983 amendments strengthening rape laws"],
+    immediateSteps:["Go to the nearest hospital for medical examination","Do not bathe or change clothes — preserve forensic evidence","Call 1091 (Women Helpline) or 112","File FIR at any police station — Zero FIR is allowed","Request a woman police officer for statement if preferred"],
+    doNot:["Do not bathe or wash before medical examination","Do not delay reporting — early evidence is crucial","Do not feel ashamed — you are the victim, not the accused","Do not settle out of court — rape is non-compoundable"],
+    helpline:"1091 — Women Helpline | 112 — Emergency",
+    prevention:"Travel in groups, use trusted cab apps with live tracking, share your location with family."
+  },
+  {
+    name:"Kidnapping", section:"IPC 363 / 364 / 365", icon:"🔍", category:"Violent",
+    desc:"Forcibly or deceitfully taking or enticing a person away from their lawful guardian or against their will.",
+    punishment:"IPC 363: Up to 7 years + Fine. IPC 364 (kidnapping for murder): Life Imprisonment or Death",
+    punishMin:"7 years", punishMax:"Life Imprisonment / Death",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court",
+    cases:["State of Karnataka v. Raju (2007) — SC clarified elements of kidnapping vs abduction","Hari Ram v. State of Rajasthan — SC on protection of minor kidnapping victims"],
+    immediateSteps:["File FIR immediately at nearest police station","Share last known location and contacts of missing person","Alert all family and friends","Contact Anti-Human Trafficking Unit (AHTU)","Share a recent photo with police — it will be circulated"],
+    doNot:["Do not pay ransom without notifying police","Do not delete call logs or messages from kidnappers","Do not negotiate alone — involve police immediately","Do not share details with media before police advise"],
+    helpline:"1098 — Child Helpline | 112 — Emergency",
+    prevention:"Teach children safe stranger rules, use GPS tracking apps for children, ensure school pickup protocols."
+  },
+  {
+    name:"Robbery & Dacoity", section:"IPC 392/394 (Robbery) / 395/396 (Dacoity)", icon:"🏛️", category:"Violent",
+    desc:"Robbery is theft with force or threat. Dacoity is robbery committed by 5 or more persons together.",
+    punishment:"Robbery: Up to 10 years RI. Dacoity with murder: Life or Death",
+    punishMin:"Up to 10 years", punishMax:"Death Penalty",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court",
+    cases:["State of Maharashtra v. Vincent (1989) — SC on essential ingredients of robbery","Yunus Khan v. State of Rajasthan — on robbery with preparation to cause death"],
+    immediateSteps:["Do not resist armed robbers — hand over valuables","Call 112 immediately after the incident","Note physical descriptions and vehicle numbers if visible","File FIR with detailed description","Block debit/credit cards immediately — call your bank"],
+    doNot:["Do not confront armed robbers","Do not try to chase robbers","Do not delay FIR — report within hours","Do not touch items handled by robbers"],
+    helpline:"112 — Emergency",
+    prevention:"Avoid displaying valuables, use ATMs in well-lit areas, be aware of surroundings in crowded places."
+  },
+  {
+    name:"Theft & Burglary", section:"IPC 378/379 (Theft) / 457/458 (Burglary)", icon:"📋", category:"Violent",
+    desc:"Theft is dishonest taking of movable property. Burglary is house trespass at night for committing an offence.",
+    punishment:"Theft: Up to 3 years. Burglary (house-breaking at night): Up to 14 years",
+    punishMin:"Up to 3 years", punishMax:"14 years RI",
+    cognizable:true, bailable:true, compoundable:false,
+    court:"Magistrate Court (theft) / Sessions Court (burglary)",
+    cases:["Pyare Lal v. State of Rajasthan — SC on ingredients of theft","State of MP v. Kalyan Singh — on house trespass by night"],
+    immediateSteps:["File FIR at nearest police station","List all stolen items with purchase receipts","Check CCTV footage from neighbours","Notify bank to block stolen cards immediately","File insurance claim with FIR copy"],
+    doNot:["Do not disturb the scene before police arrive","Do not attempt to recover stolen property yourself","Do not compromise the FIR by accepting settlement"],
+    helpline:"112 — Emergency",
+    prevention:"Install deadbolt locks, CCTV, security alarms. Use lockers for valuables. Know your neighbours."
+  },
+  {
+    name:"Cybercrime", section:"IT Act 66/66B/66C/66D/66E/66F/67/67B", icon:"💻", category:"Cyber",
+    desc:"Crimes committed using computers or the internet — hacking, identity theft, online fraud, cyberstalking, and more.",
+    punishment:"Hacking (66): 3 years / Rs.5 lakh. Identity theft (66C): 3 years / Rs.1 lakh. Cyber terrorism (66F): Life",
+    punishMin:"Varies by section", punishMax:"Life Imprisonment (66F)",
+    cognizable:true, bailable:true, compoundable:false,
+    court:"Designated Cyber Courts / Magistrate Court",
+    cases:["Shreya Singhal v. Union of India (2015) — SC struck down Section 66A of IT Act","State of Tamil Nadu v. Suhas Katti (2004) — India's first cybercrime conviction"],
+    immediateSteps:["Report at cybercrime.gov.in or call 1930","Take screenshots of all evidence immediately","Do not delete any messages or emails from fraudsters","Change passwords immediately if accounts compromised","Contact your bank if financial fraud occurred"],
+    doNot:["Do not share OTP, CVV, or passwords with anyone","Do not click suspicious links","Do not respond to lottery/prize winner messages","Do not make payments to unknown accounts"],
+    helpline:"1930 — Cyber Crime Helpline | cybercrime.gov.in",
+    prevention:"Use strong unique passwords, enable 2FA, keep software updated, verify sender before clicking links."
+  },
+  {
+    name:"Fraud & Cheating", section:"IPC 415 / 420", icon:"💰", category:"Financial",
+    desc:"Deceiving someone to dishonestly induce delivery of property, or to cause damage or harm to that person.",
+    punishment:"IPC 420: Up to 7 years + Fine",
+    punishMin:"Up to 7 years", punishMax:"7 years + Fine",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Magistrate Court",
+    cases:["Vimla v. Delhi Admn (1963) — SC on elements of cheating","Mahadeo Prasad v. State of West Bengal — on dishonest inducement"],
+    immediateSteps:["File FIR at nearest police station","Preserve all payment receipts, emails, messages","Report financial fraud to your bank immediately","File complaint with Economic Offences Wing (EOW)","Report online fraud at cybercrime.gov.in"],
+    doNot:["Do not make further payments to fraudsters","Do not share any more personal details","Do not destroy evidence in hope of recovery"],
+    helpline:"1930 — Cyber/Financial Fraud | 112 — Emergency",
+    prevention:"Verify identity of anyone you transact with. Use official channels. Never transfer money under pressure."
+  },
+  {
+    name:"Domestic Violence", section:"IPC 498A + DV Act 2005", icon:"🏠", category:"Domestic",
+    desc:"Cruelty by husband or his relatives, including physical, mental, sexual, or economic abuse against a woman.",
+    punishment:"IPC 498A: Up to 3 years + Fine. DV Act allows Protection Orders, Residence Orders, monetary relief",
+    punishMin:"Up to 3 years", punishMax:"3 years + Fine + Civil remedies",
+    cognizable:true, bailable:false, compoundable:true,
+    court:"Magistrate Court (DV Act) / Sessions Court (IPC 498A)",
+    cases:["Arnesh Kumar v. State of Bihar (2014) — SC on guidelines for arrest under 498A","Indra Sarma v. V.K.V. Sarma (2013) — SC expanded definition of domestic relationships under DV Act"],
+    immediateSteps:["Call 181 (Anti-DV Helpline) or 112","Visit nearest Protection Officer or Women's Helpline","Seek medical attention for any injuries","Document all evidence — photos, messages, recordings","Apply for Protection Order from Magistrate"],
+    doNot:["Do not stay in danger — leave if unsafe","Do not feel ashamed — abuse is never your fault","Do not destroy evidence of abuse","Do not be pressured into withdrawing complaint"],
+    helpline:"181 — Domestic Violence | 1091 — Women Helpline",
+    prevention:"Know your rights under DV Act 2005. Contact Protection Officer for information on support available."
+  },
+  {
+    name:"Dowry Harassment / Death", section:"IPC 304B / 498A", icon:"⚠️", category:"Domestic",
+    desc:"Demanding dowry or subjecting a woman to cruelty related to dowry demands. Dowry death applies if woman dies within 7 years of marriage due to burns/injuries connected to dowry demands.",
+    punishment:"IPC 304B: Minimum 7 years up to Life Imprisonment",
+    punishMin:"7 years (mandatory minimum)", punishMax:"Life Imprisonment",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court",
+    cases:["Shanti v. State of Haryana (1991) — SC on presumption of dowry death","Mustafa Shahadal Shaikh v. State of Maharashtra — on burden of proof in 304B cases"],
+    immediateSteps:["File FIR immediately — do not delay","Contact 181 (Anti-Dowry Helpline)","Preserve all evidence of dowry demands — letters, messages","Seek medical attention if injured","Apply for protection order urgently"],
+    doNot:["Do not accept any settlement offer without legal advice","Do not return to a dangerous home","Do not destroy dowry demand documents"],
+    helpline:"181 — Anti-Dowry Helpline | 1091 — Women Helpline",
+    prevention:"Know that giving and taking dowry is illegal under Dowry Prohibition Act 1961. Report demands early."
+  },
+  {
+    name:"Acid Attack", section:"IPC 326A / 326B", icon:"🔥", category:"Violent",
+    desc:"Voluntarily throwing or administering acid causing permanent or partial damage, disfiguration, or destruction to any part of the body.",
+    punishment:"326A: Minimum 10 years up to Life + fine to pay medical expenses. 326B (attempt): Up to 7 years",
+    punishMin:"10 years (mandatory minimum)", punishMax:"Life Imprisonment",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Sessions Court",
+    cases:["Laxmi v. Union of India (2014) — SC landmark: regulated sale of acid, mandated compensation","Parivartan Kendra v. Union of India — on compensation and rehabilitation of acid attack victims"],
+    immediateSteps:["Flush the affected area with large amounts of water immediately — minimum 20 minutes","Call 112 and get to hospital immediately","Do not apply toothpaste, oil, or any home remedy — only water","File FIR immediately — acid attack is a scheduled offence","Apply for compensation under DV Act and Nirbhaya Fund"],
+    doNot:["Do not use neutralisers like baking soda — only water","Do not cover the wound with cloth — keep washing","Do not delay hospital visit — seconds matter"],
+    helpline:"112 — Emergency | 1091 — Women Helpline",
+    prevention:"Acid sale is regulated — report illegal acid sales. Be aware of stalkers or jilted individuals making threats."
+  },
+  {
+    name:"Stalking", section:"IPC 354D", icon:"👁️", category:"Sexual",
+    desc:"Repeatedly following, watching, contacting, or monitoring a woman against her will, or despite her clear disinterest.",
+    punishment:"1st offence: Up to 3 years + Fine. Repeat offence: Up to 5 years + Fine",
+    punishMin:"Up to 3 years", punishMax:"5 years (repeat offence)",
+    cognizable:true, bailable:false, compoundable:true,
+    court:"Magistrate Court",
+    cases:["Rupan Deol Bajaj v. K.P.S. Gill (1996) — on harassment by persons in authority","State of AP v. N. Venugopal — on establishing pattern of stalking behaviour"],
+    immediateSteps:["Document every instance — dates, times, locations, screenshots","File FIR at nearest police station","Apply for restraining order from Magistrate","Inform trusted friends and family","Change your regular routes and routines"],
+    doNot:["Do not meet the stalker alone to confront them","Do not ignore the behaviour — it often escalates","Do not engage with messages — preserve them as evidence"],
+    helpline:"1091 — Women Helpline | 112 — Emergency",
+    prevention:"Keep your address and daily schedule private on social media. Trust your instincts if someone makes you uncomfortable."
+  },
+  {
+    name:"Child Abuse (POCSO)", section:"POCSO Act Sections 3-14", icon:"🧒", category:"Sexual",
+    desc:"Sexual assault, harassment, or pornography involving children (under 18). The POCSO Act 2012 provides special protection with mandatory reporting obligations.",
+    punishment:"Penetrative sexual assault on child: Minimum 20 years up to Life/Death. Aggravated cases attract higher minimum.",
+    punishMin:"Varies: 3 years to 20 years minimum", punishMax:"Death Penalty / Life Imprisonment",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Special POCSO Courts (Fast Track)",
+    cases:["Independent Thought v. Union of India (2017) — SC: marital rape of minor wife is rape under POCSO","Alakh Alok Srivastava v. Union of India — SC on fast-track courts for POCSO cases"],
+    immediateSteps:["Call Childline 1098 immediately","Report to nearest police or Special Juvenile Police Unit (SJPU)","Mandatory reporting: ANY person with knowledge MUST report (POCSO Sec 19)","Seek medical examination for the child","Ensure child's identity is protected — disclosing is an offence"],
+    doNot:["Do not ask the child to repeat the account unnecessarily","Do not confront the accused with the child present","Do not share child's identity or details publicly","Do not delay reporting — it is legally mandatory"],
+    helpline:"1098 — Child Helpline | 112 — Emergency",
+    prevention:"Teach children about body safety and trusted adults. Monitor online activity. Be alert to behavioural changes."
+  },
+  {
+    name:"Eve Teasing / Sexual Harassment", section:"IPC 354A / 354B", icon:"⚠️", category:"Sexual",
+    desc:"Unwelcome physical contact, sexual overtures, demands for sexual favours, or showing pornography. Section 354B covers assault with intent to disrobe.",
+    punishment:"354A: Up to 3 years + Fine. 354B: Minimum 3 years up to 7 years + Fine",
+    punishMin:"Up to 3 years", punishMax:"7 years",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Magistrate Court",
+    cases:["Vishaka v. State of Rajasthan (1997) — SC guidelines on workplace sexual harassment (led to POSH Act 2013)","Apparel Export Promotion Council v. A.K. Chopra — on sexual harassment at workplace"],
+    immediateSteps:["Raise your voice loudly in a public place to attract attention","Call 112 or 1091 immediately","Note physical description and vehicle number of accused","File FIR — do not accept 'it's a small matter'","At workplace: file complaint with Internal Complaints Committee (ICC)"],
+    doNot:["Do not feel embarrassed — you are not at fault","Do not delete screenshots of online harassment","Do not accept monetary settlement without legal advice"],
+    helpline:"1091 — Women Helpline | 112 — Emergency",
+    prevention:"Know your rights under POSH Act at workplace. Screenshot and report all online harassment immediately."
+  },
+  {
+    name:"Drunk Driving", section:"Motor Vehicles Act 185", icon:"🚗", category:"Traffic",
+    desc:"Driving a motor vehicle with blood alcohol level exceeding 30mg per 100ml of blood. A serious traffic offence causing thousands of deaths annually in India.",
+    punishment:"1st offence: Up to 6 months / Rs.10,000 fine or both. 2nd offence within 3 years: Up to 2 years / Rs.15,000 fine",
+    punishMin:"6 months / Rs.10,000 fine", punishMax:"2 years / Rs.15,000 fine (repeat)",
+    cognizable:true, bailable:true, compoundable:false,
+    court:"Magistrate Court",
+    cases:["Naveen Sharma v. State of Delhi — on quantum of punishment for repeat drunk driving","State v. Sanjeev Nanda (2012) — BMW hit-and-run case involving drunk driving"],
+    immediateSteps:["Do not drink and drive — arrange a cab or designated driver","If you witness drunk driving, call 112 to report the vehicle number","If in an accident caused by drunk driver, call 112 immediately","Preserve medical records, dashcam footage as evidence","Report to Motor Accidents Claims Tribunal (MACT) for compensation"],
+    doNot:["Never drink and drive under any circumstances","Do not let friends drive drunk","Do not accept lift from someone who has been drinking"],
+    helpline:"112 — Emergency | 1073 — Road Accident Helpline",
+    prevention:"Designate a sober driver. Use Ola/Uber after parties. Report drunk drivers to police by calling 112."
+  },
+  {
+    name:"Drug Offences", section:"NDPS Act 20/21/22/27", icon:"💊", category:"Narcotics",
+    desc:"Production, manufacture, possession, sale, purchase, or consumption of narcotic drugs and psychotropic substances without valid authorisation.",
+    punishment:"Small quantity (personal use): 6 months–1 year. Commercial quantity: 10-20 years RI + fine",
+    punishMin:"6 months (small qty personal use)", punishMax:"20 years RI + fine (commercial qty)",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Special NDPS Courts / Sessions Court",
+    cases:["Union of India v. Ram Samujh (1999) — on bail in NDPS offences","Mohd. Khalid v. State of West Bengal — on NDPS seizures and burden of proof"],
+    immediateSteps:["If you witness drug dealing, call 112 or NCB helpline","Do not touch or handle any suspected drugs","Report drug dens or suppliers to Narcotics Control Bureau (NCB)","If approached with drugs at parties — refuse and leave","For addiction help, call iCall 9152987821"],
+    doNot:["Never carry drugs for others — even unknowingly","Do not accept unknown substances from strangers","Do not believe bail is easily available — NDPS bail rules are strict"],
+    helpline:"112 — Emergency | NCB: 1800-180-9292",
+    prevention:"Know that NDPS has stringent bail conditions and reverse burden of proof. Avoid all illegal drug activity."
+  },
+  {
+    name:"Money Laundering", section:"PMLA Sections 3 & 4", icon:"💸", category:"White-collar",
+    desc:"Concealing, acquiring, possessing, or using proceeds of crime to make illegally obtained funds appear legitimate.",
+    punishment:"3 to 7 years Rigorous Imprisonment + Fine up to Rs.5 lakh. Scheduled offence cases: up to 10 years",
+    punishMin:"3 years RI", punishMax:"10 years RI",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Special Courts under PMLA",
+    cases:["Vijay Madanlal Choudhary v. Union of India (2022) — SC upheld PMLA's stringent bail provisions","Nikesh Tarachand Shah v. Union of India (2017) — on bail conditions under PMLA"],
+    immediateSteps:["Report suspicious financial transactions to ED at 1800-11-4131","Report to your bank's compliance team","File complaint with Financial Intelligence Unit (FIU)","Consult a lawyer specialising in economic offences","Cooperate with Enforcement Directorate (ED) investigations"],
+    doNot:["Do not transfer money at request of unknown persons","Do not allow your account to be used for others' transactions","Do not ignore unusual credits in your account"],
+    helpline:"ED Helpline: 1800-11-4131 | EOW of State Police",
+    prevention:"Monitor your bank account regularly. Report any unknown credits or suspicious requests to your bank immediately."
+  },
+  {
+    name:"Corruption & Bribery", section:"Prevention of Corruption Act 7 & 13", icon:"🏛️", category:"White-collar",
+    desc:"A public servant demanding, accepting, or obtaining any gratification (other than legal remuneration) as a motive or reward.",
+    punishment:"Under PC Act 7: 3 to 7 years RI + Fine. Under PC Act 13 (criminal misconduct): 3 to 7 years",
+    punishMin:"3 years RI", punishMax:"7 years RI",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Special Judge under PC Act",
+    cases:["CBI v. V.C. Shukla (1998) — on trap cases in PC Act prosecutions","P.V. Narasimha Rao v. State (1998) — on Members of Parliament and PC Act"],
+    immediateSteps:["Call 1064 (Anti-Corruption Helpline)","File complaint with State Anti-Corruption Bureau (ACB) or CBI","Request CBI/ACB to set up a trap operation","Preserve all evidence of bribe demands — audio/video if possible","File complaint with Lokayukta / Ombudsman for state officials"],
+    doNot:["Do not pay the bribe if you can avoid it — it makes you a giver","Do not threaten the corrupt official — use official channels","Do not destroy evidence of demands"],
+    helpline:"1064 — Anti-Corruption | CBI: 011-24363401",
+    prevention:"Use RTI to seek records. Report demands to ACB. Support transparency in government processes."
+  },
+  {
+    name:"RTI Obstruction", section:"RTI Act Section 20", icon:"📄", category:"White-collar",
+    desc:"A Public Information Officer refusing to receive an RTI application, not providing information within time, knowingly providing false information, or obstructing access to information.",
+    punishment:"Penalty of Rs.250 per day up to Rs.25,000 on the PIO + Disciplinary action + Possible prosecution",
+    punishMin:"Rs.250/day fine", punishMax:"Rs.25,000 fine + Disciplinary action",
+    cognizable:false, bailable:true, compoundable:false,
+    court:"Central/State Information Commission (CIC/SIC)",
+    cases:["CBSE v. Aditya Bandopadhyay (2011) — SC on scope of RTI and fiduciary information","Girish Ramchandra Deshpande v. CIC (2013) — SC on personal information under RTI"],
+    immediateSteps:["File 1st Appeal to Appellate Authority within 30 days of PIO failure","If 1st Appeal fails, file 2nd Appeal to CIC/SIC within 90 days","Mention specific violation: delay, refusal, false info","Seek penalty against the PIO in your appeal","File online at https://rtionline.gov.in"],
+    doNot:["Do not give up after one rejection — use the appeal process","Do not pay any unofficial fee","Do not withdraw appeal under pressure"],
+    helpline:"CIC: 011-26180532 | Online: cic.gov.in",
+    prevention:"Always send RTI via registered post or online portal. Keep copies of all correspondence."
+  },
+  {
+    name:"Forgery", section:"IPC 463 / 468 / 471", icon:"📝", category:"Financial",
+    desc:"Making a false document or electronic record with intent to cause damage or injury. Using forged documents as genuine is equally punishable.",
+    punishment:"IPC 468 (forgery for cheating): Up to 7 years + Fine. IPC 471 (using forged document): Same as forgery",
+    punishMin:"Up to 2 years (basic forgery)", punishMax:"7 years + Fine",
+    cognizable:true, bailable:false, compoundable:false,
+    court:"Magistrate Court",
+    cases:["Sri Bhagwan Samardha v. State of Andhra Pradesh — on ingredients of forgery","State of Maharashtra v. Som Nath Thapa — on use of forged document"],
+    immediateSteps:["File FIR with copies of the forged documents as evidence","Report to the relevant authority (bank, government dept) immediately","File complaint with Economic Offences Wing","Preserve originals and get handwriting expert opinion"],
+    doNot:["Do not confront the forger alone","Do not destroy any documents even if embarrassing"],
+    helpline:"112 — Emergency | Economic Offences Wing of state police",
+    prevention:"Use digital document verification where available. Always verify signatories on important documents."
+  },
+  {
+    name:"Defamation", section:"IPC 499 / 500", icon:"📢", category:"White-collar",
+    desc:"Making or publishing an imputation concerning a person intended to harm their reputation. Can be spoken (slander) or written/digital (libel).",
+    punishment:"Up to 2 years Simple Imprisonment or Fine or Both. Section 501 (printing defamatory matter): Same",
+    punishMin:"Up to 2 years", punishMax:"2 years Simple Imprisonment",
+    cognizable:false, bailable:true, compoundable:true,
+    court:"Magistrate Court",
+    cases:["R. Rajagopal v. State of Tamil Nadu (1994) — SC on privacy and defamation","Subramanian Swamy v. Union of India (2016) — SC upheld constitutional validity of criminal defamation"],
+    immediateSteps:["Consult a lawyer for both criminal complaint (IPC 500) and civil suit","Document all defamatory statements with timestamps","Send a legal notice demanding retraction","File criminal complaint before Magistrate","For online defamation: report to platform and cybercrime.gov.in"],
+    doNot:["Do not respond publicly to defamatory statements","Do not delete evidence before consulting lawyer","Do not make counter-defamatory statements"],
+    helpline:"Consult a civil/criminal lawyer | Bar Council of India: barcouncilofindia.org",
+    prevention:"Consult a lawyer before sharing sensitive personal information publicly. Exercise right of reply through official channels."
+  }
+];
+
+let currentCat = '';
+
+function setCat(cat){
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(cat) || (cat==='' && b.textContent==='All'));
+  });
+  filterCrimes();
+}
+
+function filterCrimes(){
+  const q = document.getElementById('encSearch').value.toLowerCase();
+  const container = document.getElementById('crimeList');
+  container.innerHTML = '';
+  let shown = 0;
+  CRIMES.forEach((c, idx) => {
+    const matchQ = !q || c.name.toLowerCase().includes(q) || c.section.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q);
+    const matchCat = !currentCat || c.category === currentCat;
+    if(matchQ && matchCat){
+      container.appendChild(buildCard(c, idx));
+      shown++;
+    }
+  });
+  if(shown===0){
+    container.innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted)">No crimes found matching your search.</div>';
+  }
+}
+
+function buildCard(c, idx){
+  const div = document.createElement('div');
+  div.className = 'enc-card';
+  div.innerHTML = `
+    <div class="enc-header" onclick="toggleCard(${idx})">
+      <div style="display:flex;align-items:center;gap:12px;flex:1">
+        <span style="font-size:1.6rem">${c.icon}</span>
+        <div>
+          <div style="font-weight:700;color:var(--white);font-size:1.05rem">${c.name}</div>
+          <div style="color:var(--accent);font-size:.85rem">${c.section}</div>
+        </div>
+        <span style="background:var(--bg);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:.75rem;color:var(--muted);margin-left:auto">${c.category}</span>
+      </div>
+      <span style="color:var(--muted);font-size:1.2rem" id="chevron-${idx}">▼</span>
+    </div>
+    <div class="enc-body" id="body-${idx}">
+      <p style="color:var(--muted);margin-bottom:16px">${c.desc}</p>
+      <div class="tab-nav" id="tabs-${idx}">
+        <button class="tab-btn active" onclick="showTab(${idx},'overview')">Overview</button>
+        <button class="tab-btn" onclick="showTab(${idx},'law')">Law & Punishment</button>
+        <button class="tab-btn" onclick="showTab(${idx},'todo')">What To Do</button>
+        <button class="tab-btn" onclick="showTab(${idx},'cases')">Landmark Cases</button>
+      </div>
+      <div class="tab-content active" id="tab-${idx}-overview">
+        <div class="info-grid">
+          <div class="info-item"><div class="lbl">Min Punishment</div><div class="val" style="color:#f59e0b">${c.punishMin}</div></div>
+          <div class="info-item"><div class="lbl">Max Punishment</div><div class="val" style="color:#ef4444">${c.punishMax}</div></div>
+          <div class="info-item"><div class="lbl">Cognizable</div><div class="val" style="color:${c.cognizable?'#22c55e':'#ef4444'}">${c.cognizable?'Yes — Police can arrest without warrant':'No — Warrant needed'}</div></div>
+          <div class="info-item"><div class="lbl">Bailable</div><div class="val" style="color:${c.bailable?'#22c55e':'#ef4444'}">${c.bailable?'Yes — Bail as of right':'No — Bail at court discretion'}</div></div>
+          <div class="info-item"><div class="lbl">Compoundable</div><div class="val">${c.compoundable?'Yes — Can be settled':'No — Cannot be settled privately'}</div></div>
+          <div class="info-item"><div class="lbl">Court</div><div class="val">${c.court}</div></div>
+        </div>
+        <div style="background:var(--bg);padding:12px;border-radius:8px;margin-top:8px">
+          <div style="color:var(--muted);font-size:.8rem;margin-bottom:4px">Helpline</div>
+          <div style="color:var(--accent);font-weight:600">${c.helpline}</div>
+        </div>
+        <div style="background:var(--bg);padding:12px;border-radius:8px;margin-top:8px">
+          <div style="color:var(--muted);font-size:.8rem;margin-bottom:4px">Prevention Tip</div>
+          <div style="color:var(--text);font-size:.9rem">${c.prevention}</div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="askAI('${c.name}')" class="btn btn-outline" style="font-size:.85rem;padding:6px 14px">💬 Ask AI about this crime</button>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-${idx}-law">
+        <div style="background:var(--bg);padding:16px;border-radius:8px;margin-bottom:12px">
+          <div style="color:var(--muted);font-size:.8rem;margin-bottom:6px">Applicable Section(s)</div>
+          <div style="color:var(--accent);font-weight:700;font-size:1.1rem">${c.section}</div>
+        </div>
+        <div style="background:var(--bg);padding:16px;border-radius:8px;margin-bottom:12px">
+          <div style="color:var(--muted);font-size:.8rem;margin-bottom:6px">Full Punishment</div>
+          <div style="color:var(--text)">${c.punishment}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div style="background:${c.cognizable?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};border:1px solid ${c.cognizable?'#22c55e':'#ef4444'};padding:12px;border-radius:8px;text-align:center">
+            <div style="font-size:1.4rem">${c.cognizable?'✅':'❌'}</div>
+            <div style="color:var(--muted);font-size:.75rem;margin-top:4px">Cognizable</div>
+          </div>
+          <div style="background:${c.bailable?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};border:1px solid ${c.bailable?'#22c55e':'#ef4444'};padding:12px;border-radius:8px;text-align:center">
+            <div style="font-size:1.4rem">${c.bailable?'✅':'❌'}</div>
+            <div style="color:var(--muted);font-size:.75rem;margin-top:4px">Bailable</div>
+          </div>
+          <div style="background:${c.compoundable?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};border:1px solid ${c.compoundable?'#22c55e':'#ef4444'};padding:12px;border-radius:8px;text-align:center">
+            <div style="font-size:1.4rem">${c.compoundable?'✅':'❌'}</div>
+            <div style="color:var(--muted);font-size:.75rem;margin-top:4px">Compoundable</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-${idx}-todo">
+        <h4 style="color:#22c55e;margin-bottom:12px">✅ Do This Immediately</h4>
+        <ul class="step-list">${c.immediateSteps.map(s=>`<li>${s}</li>`).join('')}</ul>
+        <h4 style="color:#ef4444;margin:16px 0 12px">❌ Do NOT Do This</h4>
+        <ul style="padding-left:20px;color:var(--text);font-size:.9rem;line-height:2">${c.doNot.map(s=>`<li>${s}</li>`).join('')}</ul>
+        <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);padding:14px;border-radius:8px;margin-top:16px">
+          <strong style="color:#3b82f6">📞 Emergency:</strong> <span style="color:var(--text)">${c.helpline}</span>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-${idx}-cases">
+        <h4 style="color:var(--white);margin-bottom:14px">Supreme Court Landmark Cases</h4>
+        ${c.cases.map(cs=>`<div style="background:var(--bg);padding:14px;border-radius:8px;margin-bottom:10px;border-left:3px solid var(--accent)"><p style="color:var(--text);font-size:.9rem;margin:0">${cs}</p></div>`).join('')}
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+function toggleCard(idx){
+  const body = document.getElementById('body-'+idx);
+  const chevron = document.getElementById('chevron-'+idx);
+  const isOpen = body.classList.toggle('open');
+  chevron.textContent = isOpen ? '▲' : '▼';
+}
+
+function showTab(idx, tab){
+  document.querySelectorAll(`#tabs-${idx} .tab-btn`).forEach((b,i)=>{
+    const tabs = ['overview','law','todo','cases'];
+    b.classList.toggle('active', tabs[i]===tab);
+  });
+  ['overview','law','todo','cases'].forEach(t=>{
+    const el = document.getElementById(`tab-${idx}-${t}`);
+    if(el) el.classList.toggle('active', t===tab);
+  });
+}
+
+function askAI(crime){
+  const input = document.getElementById('aiChatInput');
+  if(input){
+    input.value = `Tell me about ${crime} — IPC sections, punishment, and what a victim should do.`;
+    document.getElementById('aiChatWindow').style.display='flex';
+    document.getElementById('aiChatInput').focus();
+  }
+}
+
+filterCrimes();
+</script>
+{% endblock %}

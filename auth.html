@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Login / Register — CrimeAware India{% endblock %}
+{% block content %}
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:40px 16px">
+  <div style="width:100%;max-width:440px">
+
+    <!-- Tabs -->
+    <div style="display:flex;background:var(--bg2);border-radius:12px;padding:4px;margin-bottom:28px">
+      <button onclick="showTab('login')" id="tab-login"
+        style="flex:1;padding:10px;border:none;border-radius:9px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff;transition:.2s">
+        Login
+      </button>
+      <button onclick="showTab('register')" id="tab-register"
+        style="flex:1;padding:10px;border:none;border-radius:9px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:.2s">
+        Register
+      </button>
+    </div>
+
+    <!-- Card -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px">
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <h2 style="margin-bottom:8px;color:var(--white)">Welcome back 👋</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Login to your CrimeAware account</p>
+        <div id="login-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid #ef4444;border-radius:8px;padding:12px;color:#ef4444;font-size:.88rem;margin-bottom:16px"></div>
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">Email</label>
+          <input id="login-email" type="email" placeholder="you@email.com"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none"/>
+        </div>
+        <div style="margin-bottom:24px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none"/>
+        </div>
+        <button onclick="doLogin()" id="login-btn"
+          style="width:100%;padding:13px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:600;cursor:pointer">
+          Login →
+        </button>
+        <p style="text-align:center;margin-top:18px;font-size:.88rem;color:var(--muted)">
+          No account? <a onclick="showTab('register')" style="color:var(--accent);cursor:pointer">Register here</a>
+        </p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-register" style="display:none">
+        <h2 style="margin-bottom:8px;color:var(--white)">Create Account 🛡️</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Join CrimeAware India</p>
+        <div id="reg-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid #ef4444;border-radius:8px;padding:12px;color:#ef4444;font-size:.88rem;margin-bottom:16px"></div>
+        <div id="reg-success" style="display:none;background:rgba(34,197,94,.1);border:1px solid #22c55e;border-radius:8px;padding:12px;color:#22c55e;font-size:.88rem;margin-bottom:16px"></div>
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">Full Name</label>
+          <input id="reg-name" type="text" placeholder="Mohit Ahire"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none"/>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">Email</label>
+          <input id="reg-email" type="email" placeholder="you@email.com"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none"/>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">Password</label>
+          <input id="reg-password" type="password" placeholder="Min 6 characters"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none"/>
+        </div>
+        <div style="margin-bottom:24px">
+          <label style="display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px">State</label>
+          <select id="reg-state"
+            style="width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;box-sizing:border-box;outline:none">
+            <option value="">Select your state</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option>
+            <option>Bihar</option><option>Chhattisgarh</option><option>Goa</option>
+            <option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+            <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option>
+            <option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option>
+            <option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+            <option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+            <option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option>
+            <option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option>
+            <option>West Bengal</option><option>Delhi</option>
+          </select>
+        </div>
+        <button onclick="doRegister()" id="reg-btn"
+          style="width:100%;padding:13px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:600;cursor:pointer">
+          Create Account →
+        </button>
+        <p style="text-align:center;margin-top:18px;font-size:.88rem;color:var(--muted)">
+          Already have account? <a onclick="showTab('login')" style="color:var(--accent);cursor:pointer">Login here</a>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- User info card (shown after login) -->
+    <div id="user-card" style="display:none;margin-top:20px;background:rgba(34,197,94,.08);border:1px solid #22c55e;border-radius:12px;padding:20px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:8px">✅</div>
+      <div id="user-greeting" style="font-weight:700;color:var(--white);font-size:1.1rem"></div>
+      <div id="user-role" style="color:var(--muted);font-size:.85rem;margin-top:4px"></div>
+      <button onclick="doLogout()"
+        style="margin-top:16px;padding:8px 24px;background:transparent;border:1px solid #ef4444;border-radius:8px;color:#ef4444;cursor:pointer;font-size:.9rem">
+        Logout
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.getElementById('form-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('tab-login').style.background    = tab==='login'    ? 'var(--accent)' : 'transparent';
+  document.getElementById('tab-register').style.background = tab==='register' ? 'var(--accent)' : 'transparent';
+  document.getElementById('tab-login').style.color    = tab==='login'    ? '#fff' : 'var(--muted)';
+  document.getElementById('tab-register').style.color = tab==='register' ? '#fff' : 'var(--muted)';
+}
+
+function setBtn(id, txt, disabled) {
+  var b = document.getElementById(id);
+  b.textContent = txt; b.disabled = disabled;
+}
+
+async function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-password').value;
+  var err   = document.getElementById('login-error');
+  err.style.display = 'none';
+  if (!email || !pass) { err.textContent='Please fill all fields.'; err.style.display='block'; return; }
+  setBtn('login-btn','Logging in...', true);
+  try {
+    var res  = await fetch('/api/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    var data = await res.json();
+    if (data.success) {
+      localStorage.setItem('ca_token', data.token);
+      localStorage.setItem('ca_user',  JSON.stringify(data.user));
+      showUserCard(data.user);
+    } else {
+      err.textContent = data.error || 'Login failed.';
+      err.style.display = 'block';
+    }
+  } catch(e) { err.textContent='Server error.'; err.style.display='block'; }
+  setBtn('login-btn','Login →', false);
+}
+
+async function doRegister() {
+  var name  = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass  = document.getElementById('reg-password').value;
+  var state = document.getElementById('reg-state').value;
+  var err   = document.getElementById('reg-error');
+  var suc   = document.getElementById('reg-success');
+  err.style.display='none'; suc.style.display='none';
+  if (!name||!email||!pass) { err.textContent='Please fill all fields.'; err.style.display='block'; return; }
+  if (pass.length < 6)      { err.textContent='Password must be at least 6 characters.'; err.style.display='block'; return; }
+  setBtn('reg-btn','Creating account...', true);
+  try {
+    var res  = await fetch('/api/auth/register', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass,state})});
+    var data = await res.json();
+    if (data.success) {
+      localStorage.setItem('ca_token', data.token);
+      localStorage.setItem('ca_user',  JSON.stringify(data.user));
+      suc.textContent = 'Account created! Welcome, ' + data.user.name + ' 🎉';
+      suc.style.display = 'block';
+      setTimeout(()=>showUserCard(data.user), 1000);
+    } else {
+      err.textContent = data.error || 'Registration failed.';
+      err.style.display = 'block';
+    }
+  } catch(e) { err.textContent='Server error.'; err.style.display='block'; }
+  setBtn('reg-btn','Create Account →', false);
+}
+
+function showUserCard(user) {
+  document.getElementById('form-login').style.display    = 'none';
+  document.getElementById('form-register').style.display = 'none';
+  document.getElementById('tab-login').parentElement.style.display = 'none';
+  document.getElementById('user-greeting').textContent = 'Welcome, ' + user.name + '!';
+  document.getElementById('user-role').textContent     = 'Role: ' + user.role + (user.state ? ' · ' + user.state : '');
+  document.getElementById('user-card').style.display   = 'block';
+  updateNavBtn(user.name);
+}
+
+function doLogout() {
+  localStorage.removeItem('ca_token');
+  localStorage.removeItem('ca_user');
+  location.reload();
+}
+
+function updateNavBtn(name) {
+  var btn = document.getElementById('nav-login-btn');
+  if (btn) { btn.textContent = '👤 ' + name.split(' ')[0]; btn.href='/login'; }
+}
+
+// Auto-detect if already logged in
+window.addEventListener('load', function() {
+  var u = localStorage.getItem('ca_user');
+  if (u) { try { showUserCard(JSON.parse(u)); } catch(e) {} }
+});
+</script>
+{% endblock %}

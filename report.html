@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Report Incident — CrimeAware India{% endblock %}
+
+{% block content %}
+<div class="page" style="padding: 40px 20px;">
+    <div class="container" style="max-width: 800px; margin: 0 auto; background: var(--bg2); padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        
+        <a href="/dashboard" class="btn btn-outline" style="margin-bottom:20px; display:inline-block;">← Back</a>
+        
+        <h1 style="color:var(--danger); margin-bottom: 10px;">🔴 Anonymous Incident Report</h1>
+        <p style="color:var(--muted); margin-bottom: 20px;">Your report helps the community stay safe. Drop a pin on the map to mark the location. No personal data or email is collected (secured via SHA-256 IP Hashing).</p>
+        
+        <form id="reportForm" style="display:flex; flex-direction:column; gap:15px;">
+            <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                    <label style="display:block; margin-bottom:5px; color:var(--white);">Crime/Incident Type</label>
+                    <select id="crimeType" style="width:100%; padding:10px; background:var(--bg); border:1px solid var(--border); color:var(--white); border-radius:4px;">
+                        <option value="Robbery/Theft">Robbery/Theft</option>
+                        <option value="Assault/Violence">Assault/Violence</option>
+                        <option value="Harassment">Harassment</option>
+                        <option value="Suspicious Activity">Suspicious Activity</option>
+                        <option value="Cybercrime Local">Cybercrime (Local Base)</option>
+                    </select>
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <label style="display:block; margin-bottom:5px; color:var(--white);">State</label>
+                    <input type="text" id="stateInput" placeholder="e.g. Maharashtra" style="width:100%; padding:10px; background:var(--bg); border:1px solid var(--border); color:var(--white); border-radius:4px;" required>
+                </div>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:5px; color:var(--white);">Description (Max 200 chars)</label>
+                <textarea id="descInput" maxlength="200" rows="3" style="width:100%; padding:10px; background:var(--bg); border:1px solid var(--border); color:var(--white); border-radius:4px;" placeholder="Brief details about the incident..."></textarea>
+            </div>
+            
+            <div style="margin-top:10px;">
+                <label style="display:block; margin-bottom:5px; color:var(--white);">📍 Pinpoint Location</label>
+                <p style="font-size:0.8rem; color:var(--muted);">Click anywhere on the map to set the exact incident position.</p>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <div id="dropMap" style="width: 100%; height: 300px; border-radius: 8px; z-index:1; border: 1px solid var(--border);"></div>
+            </div>
+            
+            <input type="hidden" id="latInput">
+            <input type="hidden" id="lngInput">
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn" style="background:var(--danger); border:none; width:100%; padding: 14px; font-weight:bold; font-size: 1.1rem; cursor:pointer; color:white;">Submit Anonymous Report</button>
+            </div>
+        </form>
+        
+        <div id="reportStatus" style="margin-top:20px; font-weight:bold; display:none; text-align:center; padding:10px; border-radius:8px;"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dropMap = L.map('dropMap').setView([22.9074, 79.6271], 4);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(dropMap);
+        
+        // Fix Leaflet issue measuring hidden div correctly
+        setTimeout(() => { dropMap.invalidateSize(); }, 500);
+        
+        let marker = null;
+        
+        dropMap.on('click', function(e) {
+            if(marker) dropMap.removeLayer(marker);
+            marker = L.marker(e.latlng).addTo(dropMap);
+            document.getElementById('latInput').value = e.latlng.lat;
+            document.getElementById('lngInput').value = e.latlng.lng;
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const lat = document.getElementById('latInput').value;
+            const lng = document.getElementById('lngInput').value;
+            
+            if(!lat || !lng) {
+                alert("Please click on the map to drop a location pin.");
+                return;
+            }
+            
+            const payload = {
+                crime_type: document.getElementById('crimeType').value,
+                state: document.getElementById('stateInput').value,
+                description: document.getElementById('descInput').value,
+                latitude: lat,
+                longitude: lng
+            };
+            
+            const btn = this.querySelector('button');
+            const status = document.getElementById('reportStatus');
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+            
+            try {
+                const res = await fetch("/report", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                
+                if(res.ok) {
+                    status.style.display = "block";
+                    status.style.color = "var(--success)";
+                    status.style.background = "rgba(34, 197, 94, 0.1)";
+                    status.innerText = "✅ " + data.message;
+                    this.reset();
+                    if(marker) dropMap.removeLayer(marker);
+                } else {
+                    status.style.display = "block";
+                    status.style.color = "var(--warning)";
+                    status.innerText = "⚠️ Error: " + (data.message || "Failed. Rate limit exceeded.");
+                }
+            } catch(err) {
+                status.style.display = "block";
+                status.style.color = "var(--danger)";
+                status.innerText = "❌ Network error. Could not submit report.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Submit Anonymous Report";
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,482 @@
+[
+  {
+    "q": "Which IPC section deals with Murder?",
+    "options": [
+      "IPC 302",
+      "IPC 376",
+      "IPC 420",
+      "IPC 363"
+    ],
+    "answer": 0,
+    "category": "IPC Sections",
+    "explain": "IPC Section 302 prescribes punishment for murder \u2014 death penalty or life imprisonment plus fine."
+  },
+  {
+    "q": "What is the unified emergency helpline number in India?",
+    "options": [
+      "100",
+      "101",
+      "112",
+      "1091"
+    ],
+    "answer": 2,
+    "category": "Helplines",
+    "explain": "112 is India's unified emergency number launched in 2018 \u2014 connects police, fire and ambulance."
+  },
+  {
+    "q": "Under which Act is cybercrime punishable in India?",
+    "options": [
+      "IPC Act",
+      "IT Act 2000",
+      "CrPC",
+      "Evidence Act"
+    ],
+    "answer": 1,
+    "category": "Cyber Safety",
+    "explain": "The Information Technology Act 2000 (Section 66) governs cybercrimes. Report at cybercrime.gov.in or call 1930."
+  },
+  {
+    "q": "What should you do FIRST after witnessing a crime?",
+    "options": [
+      "Run away",
+      "Call 112",
+      "Take photos",
+      "Post on social media"
+    ],
+    "answer": 1,
+    "category": "Safety Tips",
+    "explain": "Always call emergency services first. Your safety matters most."
+  },
+  {
+    "q": "Which helpline number is for women in distress?",
+    "options": [
+      "1098",
+      "1930",
+      "1091",
+      "14567"
+    ],
+    "answer": 2,
+    "category": "Helplines",
+    "explain": "1091 is India's dedicated Women Helpline available 24x7."
+  },
+  {
+    "q": "IPC Section 420 deals with which crime?",
+    "options": [
+      "Murder",
+      "Cheating and Fraud",
+      "Kidnapping",
+      "Theft"
+    ],
+    "answer": 1,
+    "category": "IPC Sections",
+    "explain": "IPC 420 covers cheating and dishonestly inducing delivery of property. Up to 7 years imprisonment."
+  },
+  {
+    "q": "What does FIR stand for?",
+    "options": [
+      "Final Investigation Report",
+      "First Information Report",
+      "Formal Inquiry Record",
+      "Federal Intelligence Report"
+    ],
+    "answer": 1,
+    "category": "Legal Process",
+    "explain": "FIR \u2014 First Information Report \u2014 is the document filed with police to report a cognizable offence. It is your legal right to file one free of cost."
+  },
+  {
+    "q": "Child helpline number in India is?",
+    "options": [
+      "1091",
+      "1098",
+      "1930",
+      "112"
+    ],
+    "answer": 1,
+    "category": "Helplines",
+    "explain": "1098 is Childline India \u2014 a 24-hour free helpline for children in distress."
+  },
+  {
+    "q": "Which IPC section covers Kidnapping?",
+    "options": [
+      "IPC 363",
+      "IPC 302",
+      "IPC 376",
+      "IPC 392"
+    ],
+    "answer": 0,
+    "category": "IPC Sections",
+    "explain": "IPC Section 363 deals with kidnapping. Punishment is imprisonment up to 7 years and fine."
+  },
+  {
+    "q": "Can police refuse to register an FIR for a cognizable offence?",
+    "options": [
+      "Yes, if they are busy",
+      "Yes, if the crime is small",
+      "No, it is your legal right",
+      "Only if you have proof"
+    ],
+    "answer": 2,
+    "category": "Citizen Rights",
+    "explain": "Police CANNOT legally refuse to register an FIR for a cognizable offence. If refused, approach the Superintendent of Police or a Judicial Magistrate."
+  },
+  {
+    "q": "IPC Section 498A deals with which offence?",
+    "options": [
+      "Theft",
+      "Cruelty by husband or relatives",
+      "Murder",
+      "Forgery"
+    ],
+    "answer": 1,
+    "category": "IPC Sections",
+    "explain": "IPC 498A covers cruelty by husband or his relatives towards a wife. It is cognizable and non-bailable. Punishment is up to 3 years + fine."
+  },
+  {
+    "q": "Under POCSO Act, the minimum age of a child is?",
+    "options": [
+      "14 years",
+      "16 years",
+      "18 years",
+      "21 years"
+    ],
+    "answer": 2,
+    "category": "Child Safety",
+    "explain": "POCSO (Protection of Children from Sexual Offences Act, 2012) defines a child as any person below 18 years of age."
+  },
+  {
+    "q": "What is the RTI application fee?",
+    "options": [
+      "Rs. 5",
+      "Rs. 10",
+      "Rs. 25",
+      "Free"
+    ],
+    "answer": 1,
+    "category": "RTI Act",
+    "explain": "The RTI application fee is Rs. 10 (BPL applicants are exempt). It can be paid via IPO, DD, or online."
+  },
+  {
+    "q": "Within how many days must a PIO respond to an RTI application?",
+    "options": [
+      "15 days",
+      "20 days",
+      "30 days",
+      "45 days"
+    ],
+    "answer": 2,
+    "category": "RTI Act",
+    "explain": "Under Section 7(1) of RTI Act, the Public Information Officer must respond within 30 days. For life/liberty matters, it is 48 hours."
+  },
+  {
+    "q": "Which section of IPC covers rape?",
+    "options": [
+      "IPC 354",
+      "IPC 375",
+      "IPC 376",
+      "IPC 307"
+    ],
+    "answer": 2,
+    "category": "IPC Sections",
+    "explain": "IPC Section 376 prescribes punishment for rape \u2014 minimum 10 years to life imprisonment. Section 375 defines rape."
+  },
+  {
+    "q": "IT Act Section 66C deals with?",
+    "options": [
+      "Hacking",
+      "Identity theft",
+      "Cyberstalking",
+      "Publishing obscene content"
+    ],
+    "answer": 1,
+    "category": "Cyber Safety",
+    "explain": "IT Act Section 66C covers identity theft \u2014 fraudulently using another's password or signature. Punishment is up to 3 years + Rs.1 lakh fine."
+  },
+  {
+    "q": "Under CrPC, within how many hours must an arrested person be produced before a magistrate?",
+    "options": [
+      "12 hours",
+      "24 hours",
+      "48 hours",
+      "72 hours"
+    ],
+    "answer": 1,
+    "category": "CrPC / BNSS",
+    "explain": "Under Section 57 of CrPC (now BNSS Section 35), an arrested person must be produced before a magistrate within 24 hours of arrest, excluding travel time."
+  },
+  {
+    "q": "What is 'cognizable offence'?",
+    "options": [
+      "Offence where police cannot arrest without warrant",
+      "Offence where police can arrest without warrant",
+      "Offence only tried in High Court",
+      "Offence with fine only"
+    ],
+    "answer": 1,
+    "category": "Legal Process",
+    "explain": "A cognizable offence is one where police can arrest without a warrant, register FIR, and begin investigation without magistrate's permission. Murder, rape, robbery are cognizable."
+  },
+  {
+    "q": "Section 354A of IPC covers?",
+    "options": [
+      "Stalking",
+      "Voyeurism",
+      "Sexual harassment",
+      "Acid attack"
+    ],
+    "answer": 2,
+    "category": "IPC Sections",
+    "explain": "IPC 354A covers sexual harassment including unwelcome physical contact, sexual overtures, or demand for sexual favours. Punishment is up to 3 years."
+  },
+  {
+    "q": "Under POCSO Act, who is mandated to report child sexual abuse?",
+    "options": [
+      "Only police",
+      "Only doctors",
+      "Any person who has knowledge of the offence",
+      "Only parents"
+    ],
+    "answer": 2,
+    "category": "Child Safety",
+    "explain": "POCSO Section 19 mandates that ANY person who has knowledge of a sexual offence against a child MUST report it to the police or SJPU. Failure to report is an offence."
+  },
+  {
+    "q": "What is bail?",
+    "options": [
+      "Permanent release from custody",
+      "Temporary release from custody on condition",
+      "Transfer to another jail",
+      "Fine paid to police"
+    ],
+    "answer": 1,
+    "category": "CrPC / BNSS",
+    "explain": "Bail is a temporary release from custody subject to conditions, including a surety bond. It is a right for bailable offences and discretionary for non-bailable ones."
+  },
+  {
+    "q": "IT Act Section 67B covers?",
+    "options": [
+      "Hacking",
+      "Obscene messages",
+      "Child pornography",
+      "Email spoofing"
+    ],
+    "answer": 2,
+    "category": "Cyber Safety",
+    "explain": "IT Act Section 67B specifically punishes publishing or transmitting child sexually explicit material online. Punishment is up to 7 years + fine."
+  },
+  {
+    "q": "Which Act governs domestic violence cases in India?",
+    "options": [
+      "IPC 498A only",
+      "DV Act 2005",
+      "CrPC Section 125",
+      "Family Courts Act"
+    ],
+    "answer": 1,
+    "category": "IPC Sections",
+    "explain": "The Protection of Women from Domestic Violence Act 2005 provides civil remedies including Protection Orders, Residence Orders, and monetary relief for victims."
+  },
+  {
+    "q": "IPC Section 307 deals with?",
+    "options": [
+      "Attempt to murder",
+      "Culpable homicide",
+      "Kidnapping",
+      "Robbery"
+    ],
+    "answer": 0,
+    "category": "IPC Sections",
+    "explain": "IPC 307 covers attempt to commit murder. Punishment is up to 10 years, and if hurt is caused, it can extend to life imprisonment."
+  },
+  {
+    "q": "Under RTI Act, who can file an RTI application?",
+    "options": [
+      "Only Indian citizens",
+      "Any citizen + NGOs",
+      "Any person",
+      "Only affected parties"
+    ],
+    "answer": 0,
+    "category": "RTI Act",
+    "explain": "Only Indian citizens can file RTI applications. Non-citizens, companies, and NGOs (unless filed by a citizen on their behalf) are not eligible."
+  },
+  {
+    "q": "What is 'phishing' under IT Act?",
+    "options": [
+      "Legal fishing activity",
+      "Fraudulent attempt to steal credentials online",
+      "Hacking a server",
+      "Installing keylogger"
+    ],
+    "answer": 1,
+    "category": "Cyber Safety",
+    "explain": "Phishing is a cyber fraud where criminals impersonate legitimate organisations to trick victims into sharing passwords or financial info. Punishable under IT Act Sections 66, 66C, 66D."
+  },
+  {
+    "q": "IPC Section 354D covers?",
+    "options": [
+      "Acid attack",
+      "Stalking",
+      "Voyeurism",
+      "Eve teasing"
+    ],
+    "answer": 1,
+    "category": "IPC Sections",
+    "explain": "IPC Section 354D covers stalking \u2014 repeatedly following, contacting, or monitoring a woman against her will. 1st offence: 3 years. Repeat: 5 years."
+  },
+  {
+    "q": "Under NDPS Act, what is 'small quantity' for cannabis?",
+    "options": [
+      "Up to 100 grams",
+      "Up to 500 grams",
+      "Up to 1 kg",
+      "Up to 5 kg"
+    ],
+    "answer": 1,
+    "category": "Legal Process",
+    "explain": "Under NDPS Act, small quantity for cannabis (ganja) is up to 500 grams and for hashish is 100 grams. Small quantity attracts lesser punishment \u2014 up to 1 year."
+  },
+  {
+    "q": "Which section of BNSS 2023 (replacing CrPC) covers FIR registration?",
+    "options": [
+      "Section 154",
+      "Section 173",
+      "Section 41",
+      "Section 167"
+    ],
+    "answer": 0,
+    "category": "CrPC / BNSS",
+    "explain": "Section 154 of CrPC (now BNSS Section 173) mandates FIR registration. The Supreme Court in Lalita Kumari vs UP mandated that FIR MUST be registered for cognizable offences."
+  },
+  {
+    "q": "What is a 'deepfake' and is it covered under Indian law?",
+    "options": [
+      "Real video of crime \u2014 not covered",
+      "AI-manipulated video \u2014 covered under IT Act",
+      "Old CCTV footage \u2014 partially covered",
+      "Edited photo \u2014 not covered"
+    ],
+    "answer": 1,
+    "category": "Cyber Safety",
+    "explain": "Deepfakes are AI-generated manipulated videos. They can attract IT Act sections 66E (privacy violation), 67 (obscene content), and IPC 499/500 (defamation) depending on content and intent."
+  },
+  {
+    "q": "Under IPC 406, which crime is punishable?",
+    "options": [
+      "Forgery",
+      "Criminal breach of trust",
+      "Counterfeiting currency",
+      "Rioting"
+    ],
+    "answer": 1,
+    "category": "IPC Sections",
+    "explain": "IPC 406 covers criminal breach of trust \u2014 when someone entrusted with property dishonestly misappropriates it. Punishment is up to 3 years or fine or both."
+  },
+  {
+    "q": "What does 'compoundable offence' mean?",
+    "options": [
+      "Offence with compound punishment",
+      "Offence that can be settled between parties",
+      "Offence tried in compound court",
+      "Offence with multiple accused"
+    ],
+    "answer": 1,
+    "category": "Legal Process",
+    "explain": "Compoundable offences (under IPC Section 320) can be settled between the complainant and accused, often without court intervention. Examples: assault, defamation. Murder is non-compoundable."
+  },
+  {
+    "q": "Which court has jurisdiction for serious offences like murder and rape?",
+    "options": [
+      "District Magistrate Court",
+      "Sessions Court",
+      "High Court",
+      "Supreme Court"
+    ],
+    "answer": 1,
+    "category": "Legal Process",
+    "explain": "The Sessions Court (District and Sessions Court) has original jurisdiction for serious IPC offences including murder (302), rape (376), and dacoity (395). The HC and SC are appellate courts."
+  },
+  {
+    "q": "Mandatory reporting under POCSO must be made to whom?",
+    "options": [
+      "National Commission for Women",
+      "Police or Special Juvenile Police Unit (SJPU)",
+      "CBI",
+      "District Collector"
+    ],
+    "answer": 1,
+    "category": "Child Safety",
+    "explain": "Under POCSO Section 19, any person with knowledge of an offence must report it to the local police or Special Juvenile Police Unit (SJPU) immediately."
+  },
+  {
+    "q": "What is the first appeal process under RTI Act?",
+    "options": [
+      "File in High Court",
+      "Appeal to the Appellate Authority within 30 days",
+      "Go to CIC directly",
+      "File complaint with PMO"
+    ],
+    "answer": 1,
+    "category": "RTI Act",
+    "explain": "Under RTI Section 19(1), if not satisfied with PIO response, file 1st appeal to the Appellate Authority (senior officer) within 30 days. 2nd appeal goes to CIC/SIC within 90 days."
+  },
+  {
+    "q": "IT Act 66F covers?",
+    "options": [
+      "Hacking",
+      "Identity theft",
+      "Cyber terrorism",
+      "Child pornography"
+    ],
+    "answer": 2,
+    "category": "Cyber Safety",
+    "explain": "IT Act Section 66F covers cyber terrorism \u2014 attacks on critical infrastructure, government systems, or computer networks that threaten national security. Punishment is life imprisonment."
+  },
+  {
+    "q": "Under IPC Section 304B, what is the minimum punishment for Dowry Death?",
+    "options": [
+      "3 years",
+      "5 years",
+      "7 years",
+      "10 years"
+    ],
+    "answer": 2,
+    "category": "IPC Sections",
+    "explain": "IPC Section 304B (Dowry Death) carries a MINIMUM 7 years imprisonment. If a woman dies within 7 years of marriage due to burns/injuries connected to dowry demands, IPC 304B applies."
+  },
+  {
+    "q": "What should you do if police refuse to register your FIR?",
+    "options": [
+      "Accept the refusal",
+      "Bribe the officer",
+      "Approach SP or Judicial Magistrate",
+      "Post on social media"
+    ],
+    "answer": 2,
+    "category": "Citizen Rights",
+    "explain": "If police refuse FIR registration for a cognizable offence, you can: (1) Send FIR by registered post to SP, (2) File complaint before Magistrate under CrPC Section 156(3), (3) File Writ in High Court."
+  },
+  {
+    "q": "Under which Act are zero FIR provisions mandated?",
+    "options": [
+      "IPC",
+      "RTI Act",
+      "BNSS 2023 (replacing CrPC)",
+      "Evidence Act"
+    ],
+    "answer": 2,
+    "category": "CrPC / BNSS",
+    "explain": "Zero FIR allows filing an FIR at ANY police station regardless of jurisdiction. The BNSS 2023 (Bharatiya Nagarik Suraksha Sanhita) has codified Zero FIR provisions."
+  },
+  {
+    "q": "What is the Cyber Crime national reporting portal?",
+    "options": [
+      "police.india.gov.in",
+      "cybercrime.gov.in",
+      "ncrb.gov.in",
+      "digitalindia.gov.in"
+    ],
+    "answer": 1,
+    "category": "Cyber Safety",
+    "explain": "cybercrime.gov.in is India's official online portal for reporting cybercrime complaints. You can also call 1930 for cyber crime helpline support."
+  }
+]

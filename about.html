@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}About — CrimeAware India{% endblock %}
+
+{% block content %}
+<div class="page">
+<div class="container" style="padding-top:60px;padding-bottom:80px">
+
+  <div style="max-width:800px;margin:0 auto">
+
+    <!-- Header -->
+    <div style="margin-bottom:48px;text-align:center" class="fade-up">
+      <div class="eyebrow" style="display:inline-block;margin-bottom:12px">About This Project</div>
+      <h1 style="font-size:clamp(1.8rem,4vw,3rem);margin-bottom:16px">CrimeAware India</h1>
+      <p style="color:var(--muted);font-size:1.1rem;line-height:1.7">
+        A data-driven platform for crime awareness, legal education, and citizen safety — built for India.
+      </p>
+    </div>
+
+    <!-- Mission -->
+    <div class="card reveal" style="margin-bottom:28px;border-left:3px solid var(--accent)">
+      <h3 style="margin-bottom:12px;color:var(--white)">🎯 Mission</h3>
+      <p style="color:var(--muted);line-height:1.8;font-size:.95rem">
+        Millions of Indians are unaware of their basic legal rights, don't know what constitutes a crime, 
+        and hesitate to report incidents due to lack of knowledge. CrimeAware India bridges this gap by 
+        presenting NCRB crime data in a visual, interactive format alongside practical legal guidance every citizen needs.
+      </p>
+    </div>
+
+    <!-- Data source -->
+    <div class="card reveal" style="margin-bottom:28px">
+      <h3 style="margin-bottom:12px;color:var(--white)">📊 Data Source</h3>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:12px 20px;font-size:.92rem;align-items:start">
+        <span style="color:var(--muted);font-weight:600;white-space:nowrap">Source:</span>
+        <span>National Crime Records Bureau (NCRB), Ministry of Home Affairs, Government of India</span>
+        <span style="color:var(--muted);font-weight:600">Coverage:</span>
+        <span>28 States + 8 Union Territories — 2020, 2021, 2022</span>
+        <span style="color:var(--muted);font-weight:600">Dataset:</span>
+        <span>IPC Cognizable Crimes — Total, Per-lakh rate, Charge-sheeting rate</span>
+        <span style="color:var(--muted);font-weight:600">Use:</span>
+        <span>Academic and public awareness purposes only. Not for commercial or legal proceedings.</span>
+      </div>
+    </div>
+
+    <!-- Tech stack -->
+    <div class="card reveal" style="margin-bottom:28px">
+      <h3 style="margin-bottom:16px;color:var(--white)">⚙️ Technology Stack</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+        {% for item in tech_stack %}
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:12px 14px">
+          <div style="font-weight:600;color:var(--accent2);font-size:.88rem;margin-bottom:2px">{{ item[0] }}</div>
+          <div style="font-size:.8rem;color:var(--muted)">{{ item[1] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Key features -->
+    <div class="card reveal" style="margin-bottom:28px">
+      <h3 style="margin-bottom:16px;color:var(--white)">✅ What This Platform Offers</h3>
+      <ul style="list-style:none;display:grid;gap:10px">
+        {% for item in features %}
+        <li style="display:flex;align-items:flex-start;gap:10px;font-size:.92rem;color:var(--muted)">
+          <span style="color:var(--green);flex-shrink:0;margin-top:2px">✓</span>{{ item }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Disclaimer -->
+    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r-md);padding:20px;margin-bottom:28px" class="reveal">
+      <h4 style="color:#fcd34d;margin-bottom:8px">⚠️ Disclaimer</h4>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">
+        This platform is designed for educational and public awareness purposes only. The data is sourced from NCRB 
+        publications and adapted for academic analysis. Crime risk classifications are based on statistical thresholds 
+        and should not be used for legal, judicial or policy decisions. Always consult a qualified legal professional 
+        for specific legal advice.
+      </p>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center" class="reveal">
+      <a href="/dashboard" class="btn btn-primary">📊 Explore the Dashboard</a>
+      <a href="/quiz" class="btn btn-outline" style="margin-left:12px">🧠 Test Your Knowledge</a>
+    </div>
+
+  </div>
+</div>
+</div>
+{% endblock %}

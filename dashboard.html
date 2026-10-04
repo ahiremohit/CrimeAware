@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CrimeAware India{% endblock %}
+
+{% block content %}
+<div class="page">
+<div class="container" style="padding-top:40px;padding-bottom:80px">
+
+  <!-- Header -->
+  <div style="margin-bottom:40px" class="fade-up">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+      <div class="eyebrow" style="display:inline-block;">2022 NCRB Data</div>
+      <div style="background:rgba(34,197,94,0.15); padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:600; color:var(--success);">
+          ✓ Freshness: {{ data_freshness }}
+      </div>
+    </div>
+    <h1 style="font-size:clamp(1.8rem,4vw,3rem);margin-bottom:8px">Crime Dashboard</h1>
+    <p style="color:var(--muted);font-size:1.05rem">State-wise crime risk analysis for all 36 Indian States & Union Territories</p>
+    
+    <!-- Live Ticker Component -->
+    <div style="margin-top:20px; background:rgba(239, 68, 68, 0.1); padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--danger);">
+        <p id="liveAlertTicker" style="color:var(--muted); font-size:0.95rem; margin:0; transition: opacity 0.3s ease;">
+            Attempting to connect to live intelligence feed...
+        </p>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stat-grid" style="margin-bottom:40px">
+    <div class="stat-card danger fade-up fade-up-1">
+      <div class="stat-label">High Risk</div>
+      <div class="stat-value" data-count="{{ high }}">{{ high }}</div>
+      <div class="stat-sub">States/UTs</div>
+    </div>
+    <div class="stat-card warning fade-up fade-up-2">
+      <div class="stat-label">Medium Risk</div>
+      <div class="stat-value" data-count="{{ medium }}">{{ medium }}</div>
+      <div class="stat-sub">States/UTs</div>
+    </div>
+    <div class="stat-card success fade-up fade-up-3">
+      <div class="stat-label">Low Risk</div>
+      <div class="stat-value" data-count="{{ low }}">{{ low }}</div>
+      <div class="stat-sub">States/UTs</div>
+    </div>
+    <div class="stat-card fade-up fade-up-4">
+      <div class="stat-label">Total States/UTs</div>
+      <div class="stat-value">{{ total }}</div>
+      <div class="stat-sub">Covered in dataset</div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="chart-grid reveal">
+    <div class="chart-container">
+      <div class="chart-title">📊 Top 12 States by Crime Rate (per lakh)</div>
+      <div style="width:100%;height:300px;"><canvas id="barChart" style="display:block;"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">🥧 Risk Distribution</div>
+      <div style="width:100%;height:300px;"><canvas id="pieChart" style="display:block;"></canvas></div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" onerror="this.href="/static/leaflet/leaflet.css"" />
+  
+  <!-- Interactive Map Container -->
+  <div class="card reveal" style="margin-top: 32px">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="color:var(--white)">🗺️ Live Safety Map (Community + official)</h3>
+          <div>
+              <a href="/report" class="btn btn-sm btn-outline" style="background:var(--danger); color:white; border:none; padding:8px 16px;">+ Report Incident</a>
+          </div>
+      </div>
+      <div id="indiaMap" style="width: 100%; height: 500px; border-radius: 8px; z-index:1;"></div>
+      
+      <!-- Safe Route Helper inline -->
+      <div style="margin-top: 20px; background: var(--bg2); padding: 15px; border-radius:8px;">
+          <h4 style="margin-bottom:10px;">🛣️ Safe Route Helper</h4>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <input type="text" id="routeFrom" placeholder="From (e.g. Mumbai)" style="flex:1; padding:10px; border-radius:4px; border:1px solid var(--border); background:var(--bg3); color:white;"/>
+              <input type="text" id="routeTo" placeholder="To (e.g. Pune)" style="flex:1; padding:10px; border-radius:4px; border:1px solid var(--border); background:var(--bg3); color:white;"/>
+              <button id="calcRouteBtn" style="padding:10px 20px; background:var(--accent2); color:white; border:none; border-radius:4px; cursor:pointer;">Plan Route</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Visual state tiles -->
+  <div style="margin-top:40px" class="reveal">
+    <h3 style="margin-bottom:16px;color:var(--white)">🗺️ All States — Risk Overview</h3>
+    <div class="state-map-grid" id="stateTiles">
+      {% for s in states %}
+      {% set rk = s['crime_risk_level'].split()[0] | lower %}
+      <div class="state-tile {{ rk }}" data-state="{{ s['state/ut'] }}"
+           title="{{ s['state/ut'] }} — {{ s['crime_risk_level'] }}">
+        <div class="st-name">{{ s['state/ut'] }}</div>
+        <div class="st-rate" style="color:{% if rk=='high' %}#ef4444{% elif rk=='medium' %}#f59e0b{% else %}#22c55e{% endif %}">
+          {{ s['rate_of_cognizable_crimes_(ipc)_(2022)'] | round | int }}
+        </div>
+        <div class="st-bar" style="background:{% if rk=='high' %}#ef4444{% elif rk=='medium' %}#f59e0b{% else %}#22c55e{% endif %};width:{{ s['rate_of_cognizable_crimes_(ipc)_(2022)'] | pct }}%"></div>
+      </div>
+      {% endfor %}
+    </div>
+    <p style="font-size:.78rem;color:var(--muted2);margin-top:8px">Numbers = crime rate per lakh population. Click any tile for full details.</p>
+  </div>
+
+  <!-- Full data table -->
+  <div style="margin-top:48px" class="reveal">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+      <h3 style="color:var(--white)">📋 Detailed State-wise Data</h3>
+    </div>
+
+    <!-- Search + filter & Export -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 15px; flex-wrap:wrap; gap:15px;">
+        <div class="search-bar" style="display:flex; flex-direction:column; gap:10px; flex-grow:1; max-width:800px; margin-bottom:0;">
+          <div style="display:flex; width:100%; gap:10px;">
+            <input type="text" class="search-input" id="stateSearch" placeholder="🔍 Search state or UT..."/>
+            <input type="text" class="search-input" id="nlQuerySearch" placeholder="✨ AI Search (e.g. states with high cybercrime)" style="border-left: 3px solid var(--accent);"/>
+            <button id="nlSearchBtn" class="btn" style="background:var(--accent);">Ask AI</button>
+          </div>
+          <div>
+            <button class="filter-btn active" data-risk="" onclick="filterTable('')">All</button>
+            <button class="filter-btn" data-risk="HIGH RISK" onclick="filterTable('HIGH RISK')">🔴 High</button>
+            <button class="filter-btn" data-risk="MEDIUM RISK" onclick="filterTable('MEDIUM RISK')">🟡 Medium</button>
+            <button class="filter-btn" data-risk="LOW RISK" onclick="filterTable('LOW RISK')">🟢 Low</button>
+          </div>
+        </div>
+        
+        <div style="display:flex; gap:10px;">
+            <a href="/export/csv" class="btn btn-outline" style="border-color:var(--success); color:var(--success);">📥 Download CSV</a>
+            <button onclick="window.print()" class="btn btn-outline" style="border-color:#3b82f6; color:#3b82f6;">🖨️ Save PDF</button>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>State / UT</th>
+            <th>Risk Level</th>
+            <th>Crime Rate / Lakh</th>
+            <th>Charge Rate %</th>
+            <th>2020</th>
+            <th>2021</th>
+            <th>2022</th>
+            <th>2023 Forecast (ML)</th>
+            <th>IPC Sections</th>
+          </tr>
+        </thead>
+        <tbody id="stateTableBody">
+          {% for s in states %}
+          {% set rk = s['crime_risk_level'].split()[0] | lower %}
+          <tr>
+            <td style="color:var(--muted2)">{{ loop.index }}</td>
+            <td><a href="/state/{{ s['state/ut'] }}">{{ s['state/ut'] }}</a></td>
+            <td data-risk="{{ s['crime_risk_level'] }}">
+              <span class="risk-badge risk-{{ rk }}">
+                <span class="risk-dot"></span>
+                {{ s['crime_risk_level'] }}
+              </span>
+            </td>
+            <td>
+              {{ s['rate_of_cognizable_crimes_(ipc)_(2022)'] }}
+              <div class="progress" style="margin-top:4px;width:80px">
+                <div class="progress-fill" style="width:{{ s['rate_of_cognizable_crimes_(ipc)_(2022)'] | pct }}%;background:{% if rk=='high' %}#ef4444{% elif rk=='medium' %}#f59e0b{% else %}#22c55e{% endif %}"></div>
+              </div>
+            </td>
+            <td>
+              {{ s['chargesheeting_rate_(2022)'] }}%
+              <div class="progress" style="margin-top:4px;width:80px">
+                <div class="progress-fill" style="width:{{ s['chargesheeting_rate_(2022)'] }}%;background:var(--accent2)"></div>
+              </div>
+            </td>
+            <td>{{ s['2020'] | int }}</td>
+            <td>{{ s['2021'] | int }}</td>
+            <td><strong>{{ s['2022'] | int }}</strong></td>
+            <td>
+              <span style="color:var(--warning);">✨ {{ s['2023_forecast'] | int }}</span>
+              <div style="font-size:0.7rem;color:var(--muted)">Range: {{ s['2023_range'] }}</div>
+            </td>
+            <td style="font-size:.8rem;color:var(--muted)">{{ s['ipc_sections'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" onerror="console.warn("Socket.io CDN blocked - live alerts disabled")"></script>
+<script>var _ljs=document.createElement("script");_ljs.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";_ljs.onerror=function(){var s=document.createElement("script");s.src="/static/leaflet/leaflet.js";document.head.appendChild(s);};document.head.appendChild(_ljs);</script>
+<script src="/static/js/live_feed.js"></script>
+<script>
+var stateData = {{ states | dump | safe }};
+
+window.addEventListener('load', function(){ setTimeout(function(){
+  // Bar chart - top 12 by crime rate
+  var sorted = stateData.slice().sort(function(a,b){
+    return b['rate_of_cognizable_crimes_(ipc)_(2022)'] - a['rate_of_cognizable_crimes_(ipc)_(2022)'];
+  }).slice(0,12);
+
+  var barLabels = sorted.map(function(s){ return s['state/ut'].replace(' and ','&'); });
+  var barData   = sorted.map(function(s){ return s['rate_of_cognizable_crimes_(ipc)_(2022)']; });
+  var barColors = sorted.map(function(s){
+    var r = s['crime_risk_level'];
+    return r==='HIGH RISK'?'rgba(239,68,68,0.85)':r==='MEDIUM RISK'?'rgba(245,158,11,0.85)':'rgba(34,197,94,0.85)';
+  });
+  MiniChart.bar('barChart', barLabels, barData, barColors);
+
+  // Doughnut chart
+  var counts = {HIGH:0, MEDIUM:0, LOW:0};
+  stateData.forEach(function(s){
+    if(s['crime_risk_level']==='HIGH RISK') counts.HIGH++;
+    else if(s['crime_risk_level']==='MEDIUM RISK') counts.MEDIUM++;
+    else counts.LOW++;
+  });
+  MiniChart.doughnut('pieChart',
+    ['High Risk','Medium Risk','Low Risk'],
+    [counts.HIGH, counts.MEDIUM, counts.LOW],
+    ['rgba(239,68,68,0.9)','rgba(245,158,11,0.9)','rgba(34,197,94,0.9)']
+  );
+
+  // NLP Search implementation
+  document.getElementById('nlSearchBtn').addEventListener('click', async function() {
+      const query = document.getElementById('nlQuerySearch').value.trim();
+      if (!query) return;
+      this.innerText = "Searching...";
+      try {
+          const res = await fetch("/api/dashboard_search", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ query })
+          });
+          const data = await res.json();
+          if(data.states) {
+              const rows = document.querySelectorAll("#stateTableBody tr");
+              rows.forEach(tr => {
+                  const stateName = tr.cells[1].innerText.trim();
+                  if (data.states.includes(stateName)) {
+                      tr.style.display = "";
+                      tr.style.border = "2px solid var(--accent)";
+                  } else {
+                      tr.style.display = "none";
+                  }
+              });
+          }
+      } catch (e) {
+          console.error(e);
+      } finally {
+          this.innerText = "Ask AI";
+      }
+  });
+
+  // Pillar 3: Leaflet Map Logic
+  const map = L.map('indiaMap').setView([22.9074, 79.6271], 4);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Load geojson and shade states
+  fetch("/static/india-states.geojson")
+    .then(res => res.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: function(feature) {
+                let name = feature.properties.NAME_1 || feature.properties.ID_1 || feature.properties.name || "Unknown";
+                let found = stateData.find(s => s['state/ut'].toLowerCase().includes(name.toLowerCase()));
+                let fillColor = "#94a3b8"; // default
+                if(found) {
+                    if(found.crime_risk_level === 'HIGH RISK') fillColor = "#ef4444";
+                    else if(found.crime_risk_level === 'MEDIUM RISK') fillColor = "#f59e0b";
+                    else if(found.crime_risk_level === 'LOW RISK') fillColor = "#22c55e";
+                }
+                return {
+                    fillColor: fillColor,
+                    weight: 1,
+                    opacity: 1,
+                    color: '#1e293b',
+                    fillOpacity: 0.6
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                let name = feature.properties.NAME_1 || feature.properties.ID_1 || feature.properties.name || "Unknown";
+                let found = stateData.find(s => s['state/ut'].toLowerCase().includes(name.toLowerCase()));
+                if(found) {
+                    layer.bindTooltip(`<b>${found['state/ut']}</b><br>Risk: ${found.crime_risk_level}<br>Rate: ${found['rate_of_cognizable_crimes_(ipc)_(2022)']} / lakh`);
+                    layer.on('click', () => { window.location.href = `/state/${found['state/ut']}`; });
+                } else {
+                    layer.bindTooltip(`<b>${name}</b>`);
+                }
+            }
+        }).addTo(map);
+    }).catch(e => console.log("Map GeoJSON Error:", e));
+
+  // Load Community Reports on Map
+  fetch("/api/incidents")
+    .then(res => res.json())
+    .then(incidents => {
+        incidents.forEach(inc => {
+            let marker = L.circleMarker([inc.lat, inc.lng], {
+                radius: 6,
+                fillColor: "#ff0000",
+                color: "#fff",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            marker.bindPopup(`<b>${inc.crime_type}</b><br>${inc.description}<br><small>${inc.timestamp}</small>`);
+        });
+    }).catch(e => console.log("Incidents Error:", e));
+
+  // Safe Route Handler
+  document.getElementById('calcRouteBtn').addEventListener('click', function() {
+      const from = document.getElementById('routeFrom').value;
+      const to = document.getElementById('routeTo').value;
+      if(from && to) {
+          window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}`, '_blank');
+      }
+  });
+
+}, 100); });
+</script>
+{% endblock %}

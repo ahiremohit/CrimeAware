@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Offline — CrimeAware India</title>
+<style>
+:root{--bg:#0f172a;--text:#f1f5f9;--muted:#94a3b8;--accent:#3b82f6;--red:#ef4444}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;text-align:center;padding:20px}
+.card{background:#1e293b;border-radius:16px;padding:40px;max-width:500px;width:100%}
+h1{font-size:2rem;margin-bottom:8px}
+.helplines{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.hl{background:#0f172a;border-radius:8px;padding:16px}
+.hl a{color:var(--accent);font-size:1.4rem;font-weight:700;text-decoration:none}
+.hl p{color:var(--muted);font-size:.8rem;margin:4px 0 0}
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="font-size:4rem;margin-bottom:16px">📵</div>
+  <h1>You are Offline</h1>
+  <p style="color:var(--muted)">CrimeAware India requires an internet connection. Cached data may be available.</p>
+  <p style="background:#dc2626;color:#fff;padding:12px;border-radius:8px;margin-top:16px;font-weight:600">🆘 Emergency helplines always work — no internet needed</p>
+  <div class="helplines">
+    <div class="hl"><a href="tel:112">112</a><p>Emergency (Police/Fire/Ambulance)</p></div>
+    <div class="hl"><a href="tel:1091">1091</a><p>Women Helpline</p></div>
+    <div class="hl"><a href="tel:1930">1930</a><p>Cyber Crime</p></div>
+    <div class="hl"><a href="tel:1098">1098</a><p>Child Helpline</p></div>
+    <div class="hl"><a href="tel:181">181</a><p>Domestic Violence</p></div>
+    <div class="hl"><a href="tel:14567">14567</a><p>Senior Citizen</p></div>
+  </div>
+  <button onclick="window.location.reload()" style="margin-top:24px;background:#3b82f6;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:1rem;cursor:pointer">🔄 Try Again</button>
+</div>
+</body>
+</html>

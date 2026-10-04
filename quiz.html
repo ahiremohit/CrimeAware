@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Legal Awareness Quiz — CrimeAware India{% endblock %}
+{% block content %}
+<div class="page" style="padding:40px 20px">
+  <div class="container" style="max-width:700px;margin:0 auto">
+    <div id="quizStart" class="fade-up">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="eyebrow">Test Your Knowledge</div>
+        <h1 style="color:var(--white)">🧠 Legal Awareness Quiz</h1>
+        <p style="color:var(--muted)">40 questions · XP points · Badges · Leaderboard</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px">
+        <label style="color:var(--muted);font-size:.9rem;display:block;margin-bottom:8px">Your Nickname (for leaderboard)</label>
+        <input type="text" id="nicknameInput" placeholder="Enter nickname or leave blank for Anonymous" style="width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);color:var(--white);border-radius:6px;box-sizing:border-box">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+          <div style="background:var(--bg);padding:14px;border-radius:8px;text-align:center">
+            <div id="xpDisplay" style="font-size:1.5rem;font-weight:800;color:#f59e0b">0</div>
+            <div style="color:var(--muted);font-size:.8rem">Total XP</div>
+          </div>
+          <div style="background:var(--bg);padding:14px;border-radius:8px;text-align:center">
+            <div id="badgesCount" style="font-size:1.5rem;font-weight:800;color:#8b5cf6">0</div>
+            <div style="color:var(--muted);font-size:.8rem">Badges Earned</div>
+          </div>
+        </div>
+      </div>
+      <button onclick="startQuiz()" class="btn btn-primary" style="width:100%;padding:14px;font-size:1.1rem">Start Quiz →</button>
+    </div>
+
+    <div id="quizArea" style="display:none">
+      <!-- XP Bar -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+        <span style="color:#f59e0b;font-weight:700;min-width:60px">XP: <span id="liveXP">0</span></span>
+        <div style="flex:1;background:var(--bg);border-radius:4px;height:8px;overflow:hidden">
+          <div id="xpBar" style="height:8px;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:4px;width:0%;transition:.5s"></div>
+        </div>
+        <span id="streakLabel" style="color:var(--muted);font-size:.8rem">Streak: 0</span>
+      </div>
+
+      <!-- Timer -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;height:6px">
+        <div id="timerBar" style="height:6px;background:#22c55e;width:100%;transition:width 1s linear"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+        <span style="color:var(--muted);font-size:.85rem">Q <span id="qNum">1</span> of <span id="qTotal">10</span></span>
+        <span id="timerDisplay" style="color:var(--accent);font-weight:700">45s</span>
+      </div>
+
+      <!-- Question -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:20px">
+        <div id="qCategory" style="color:var(--accent);font-size:.8rem;margin-bottom:8px"></div>
+        <h3 id="qText" style="color:var(--white);font-size:1.1rem;line-height:1.6;margin-bottom:24px"></h3>
+        <div id="qOptions" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- Explanation -->
+      <div id="qExplain" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px;margin-bottom:16px">
+        <strong style="color:#22c55e">📘 Explanation</strong>
+        <p id="qExplainText" style="color:var(--text);margin:8px 0 0;line-height:1.6;font-size:.9rem"></p>
+      </div>
+
+      <button id="nextBtn" onclick="nextQuestion()" style="display:none" class="btn btn-primary" style="width:100%">Next Question →</button>
+    </div>
+
+    <!-- Score Screen -->
+    <div id="quizScore" style="display:none;text-align:center">
+      <div style="font-size:4rem;margin-bottom:16px">🏆</div>
+      <h2 style="color:var(--white);margin-bottom:8px">Quiz Complete!</h2>
+      <div style="font-size:3rem;font-weight:800;color:#f59e0b;margin-bottom:8px" id="finalScore"></div>
+      <div id="finalXP" style="color:var(--muted);margin-bottom:24px"></div>
+      <div id="newBadges" style="margin-bottom:24px"></div>
+
+      <!-- Leaderboard -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;text-align:left">
+        <h4 style="color:var(--white);margin-bottom:12px">🏅 Top 10 Leaderboard</h4>
+        <div id="lbList"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button onclick="startQuiz()" class="btn btn-primary">🔄 Play Again</button>
+        <a href="/badges" class="btn btn-outline">🏆 View All Badges</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const ALL_QS = {{ questions|safe }};
+let questions=[], qi=0, score=0, xp=0, streak=0, timer=null, timeLeft=45;
+
+const BADGES_DEF = [
+  {id:'legal_eagle',name:'Legal Eagle',icon:'🦅',desc:'Get 5 IPC questions right in one session',check:(s)=>s.ipcCorrect>=5},
+  {id:'perfect_score',name:'Perfect Score',icon:'💯',desc:'Answer 10/10 in one attempt',check:(s,total)=>s.score===10&&total===10},
+  {id:'cyber_guardian',name:'Cyber Guardian',icon:'🔐',desc:'Get all Cyber Safety questions right',check:(s)=>s.cyberCorrect>=3&&s.cyberWrong===0},
+  {id:'rights_warrior',name:'Rights Warrior',icon:'⚔️',desc:'Answer all CrPC/RTI questions correctly',check:(s)=>s.crpcCorrect>=3&&s.crpcWrong===0},
+  {id:'safety_champion',name:'Safety Champion',icon:'🛡️',desc:'Complete the quiz 3 times',check:(s)=>s.totalPlays>=3},
+];
+
+function getXP(){return parseInt(localStorage.getItem('crimeaware_xp')||0);}
+function getBadges(){try{return JSON.parse(localStorage.getItem('crimeaware_badges')||'[]');}catch{return [];}}
+function getPlays(){return parseInt(localStorage.getItem('crimeaware_plays')||0);}
+
+function updateXPDisplay(){
+  const x=getXP();
+  document.getElementById('xpDisplay').textContent=x;
+  document.getElementById('badgesCount').textContent=getBadges().length;
+}
+updateXPDisplay();
+
+function startQuiz(){
+  const nickname = document.getElementById('nicknameInput').value.trim()||'Anonymous';
+  questions = [...ALL_QS].sort(()=>Math.random()-0.5).slice(0,10);
+  qi=0; score=0; xp=0; streak=0;
+  document.getElementById('quizStart').style.display='none';
+  document.getElementById('quizScore').style.display='none';
+  document.getElementById('quizArea').style.display='block';
+  document.getElementById('qTotal').textContent=questions.length;
+  showQuestion();
+}
+
+function showQuestion(){
+  clearInterval(timer); timeLeft=45;
+  const q = questions[qi];
+  document.getElementById('qNum').textContent=qi+1;
+  document.getElementById('qCategory').textContent=q.category||'';
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qExplain').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('liveXP').textContent=xp;
+  document.getElementById('xpBar').style.width=Math.min(xp/500*100,100)+'%';
+  document.getElementById('streakLabel').textContent='Streak: '+streak;
+
+  const opts = document.getElementById('qOptions');
+  opts.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.textContent=opt;
+    btn.style.cssText='width:100%;text-align:left;padding:12px 16px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;font-size:.95rem;transition:.2s';
+    btn.onmouseover=()=>{if(!btn.disabled)btn.style.borderColor='var(--accent)'};
+    btn.onmouseout=()=>{if(!btn.disabled&&!btn.style.background.includes('green')&&!btn.style.background.includes('red'))btn.style.borderColor='var(--border)'};
+    btn.onclick=()=>selectAnswer(i);
+    opts.appendChild(btn);
+  });
+
+  updateTimer();
+}
+
+function updateTimer(){
+  const bar=document.getElementById('timerBar');
+  const disp=document.getElementById('timerDisplay');
+  bar.style.width='100%';
+  bar.style.background='#22c55e';
+  timer=setInterval(()=>{
+    timeLeft--;
+    disp.textContent=timeLeft+'s';
+    bar.style.width=(timeLeft/45*100)+'%';
+    if(timeLeft<=15) bar.style.background='#ef4444';
+    else if(timeLeft<=25) bar.style.background='#f59e0b';
+    if(timeLeft<=0){clearInterval(timer);autoAdvance();}
+  },1000);
+}
+
+function autoAdvance(){
+  const q=questions[qi];
+  highlightAnswer(q.answer,-1);
+  streak=0;
+  document.getElementById('qExplainText').textContent=q.explain;
+  document.getElementById('qExplain').style.display='block';
+  document.getElementById('nextBtn').style.display='block';
+  document.getElementById('nextBtn').textContent='Next Question →';
+}
+
+function selectAnswer(idx){
+  clearInterval(timer);
+  const q=questions[qi];
+  const correct=idx===q.answer;
+  highlightAnswer(q.answer,idx);
+
+  if(correct){
+    score++;
+    const bonus = timeLeft>=35?2:0;
+    xp+=10+bonus+(streak>=2?5:0);
+    streak++;
+  } else {
+    xp=Math.max(0,xp-2);
+    streak=0;
+  }
+
+  document.getElementById('qExplainText').textContent=q.explain;
+  document.getElementById('qExplain').style.background=correct?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)';
+  document.getElementById('qExplain').style.borderColor=correct?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)';
+  document.getElementById('qExplain').querySelector('strong').style.color=correct?'#22c55e':'#ef4444';
+  document.getElementById('qExplain').querySelector('strong').textContent=correct?'✅ Correct! Explanation:':'❌ Incorrect. Explanation:';
+  document.getElementById('qExplain').style.display='block';
+  document.getElementById('liveXP').textContent=xp;
+  document.getElementById('nextBtn').style.display='block';
+  document.getElementById('nextBtn').textContent=qi<questions.length-1?'Next Question →':'See Results';
+}
+
+function highlightAnswer(correct,selected){
+  const btns=document.getElementById('qOptions').querySelectorAll('button');
+  btns.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct) b.style.cssText+='background:rgba(34,197,94,.2);border-color:#22c55e;color:#22c55e;';
+    else if(i===selected&&i!==correct) b.style.cssText+='background:rgba(239,68,68,.2);border-color:#ef4444;color:#ef4444;';
+  });
+}
+
+function nextQuestion(){
+  qi++;
+  if(qi<questions.length){showQuestion();}
+  else{finishQuiz();}
+}
+
+async function finishQuiz(){
+  clearInterval(timer);
+  document.getElementById('quizArea').style.display='none';
+  document.getElementById('quizScore').style.display='block';
+
+  const totalXP = getXP()+xp;
+  localStorage.setItem('crimeaware_xp', totalXP);
+  const plays = getPlays()+1;
+  localStorage.setItem('crimeaware_plays', plays);
+
+  document.getElementById('finalScore').textContent=score+'/'+questions.length;
+  document.getElementById('finalXP').textContent='+'+xp+' XP earned this round · Total: '+totalXP+' XP';
+
+  // Check badges
+  const sessionStats={
+    ipcCorrect:0,cyberCorrect:0,cyberWrong:0,crpcCorrect:0,crpcWrong:0,
+    score,totalPlays:plays
+  };
+  questions.forEach((q,i)=>{
+    const correct=score>i; // approximate
+    if(q.category==='IPC Sections'&&correct) sessionStats.ipcCorrect++;
+    if(q.category==='Cyber Safety'){correct?sessionStats.cyberCorrect++:sessionStats.cyberWrong++;}
+    if(q.category==='CrPC / BNSS'||q.category==='RTI Act'){correct?sessionStats.crpcCorrect++:sessionStats.crpcWrong++;}
+  });
+
+  const existing=getBadges();
+  const newB=[];
+  BADGES_DEF.forEach(bd=>{
+    if(!existing.includes(bd.id)&&bd.check(sessionStats,questions.length)){
+      existing.push(bd.id); newB.push(bd);
+    }
+  });
+  localStorage.setItem('crimeaware_badges',JSON.stringify(existing));
+
+  if(newB.length){
+    document.getElementById('newBadges').innerHTML='<h4 style="color:#f59e0b;margin-bottom:12px">🎉 New Badges Earned!</h4>'+
+      newB.map(b=>`<span style="display:inline-block;background:rgba(139,92,246,.2);border:1px solid #8b5cf6;border-radius:8px;padding:8px 14px;margin:4px;color:#8b5cf6;font-size:.9rem">${b.icon} ${b.name}</span>`).join('');
+  }
+
+  // Submit to leaderboard
+  const nickname = document.getElementById('nicknameInput').value.trim()||'Anonymous';
+  try {
+    await fetch('/api/leaderboard/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nickname,score,xp:totalXP})});
+    const lb=await fetch('/api/leaderboard/top').then(r=>r.json());
+    document.getElementById('lbList').innerHTML=lb.map((e,i)=>
+      `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem">
+        <span style="color:var(--muted)">#${i+1} ${e.nickname}</span>
+        <span style="color:#f59e0b">${e.xp} XP · ${e.score}/10</span>
+      </div>`
+    ).join('');
+  } catch(e){}
+}
+</script>
+{% endblock %}
